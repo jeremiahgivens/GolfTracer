@@ -51,9 +51,13 @@ struct ContentView: View {
                                 ProgressView()
                             case .loaded(let movie):
                                 NavigationLink("View Video") {
+                                    ZStack {
+                                        Color.black
+                                            .ignoresSafeArea()
                                         VideoPlayer(player: AVPlayer(url: movie.url))
-                                        .frame(maxWidth: .infinity)
+                                            .frame(maxWidth: .infinity)
                                     }
+                                }
                             case .failed:
                                 Text("Import failed")
                             }
