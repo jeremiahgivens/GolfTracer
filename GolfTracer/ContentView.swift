@@ -51,9 +51,9 @@ struct ContentView: View {
                                 ProgressView()
                             case .loaded(let movie):
                                 NavigationLink("View Video") {
-                                    VideoPlayer(player: AVPlayer(url: movie.url))
-                                        .scaledToFit()
-                                }
+                                        VideoPlayer(player: AVPlayer(url: movie.url))
+                                        .frame(maxWidth: .infinity)
+                                    }
                             case .failed:
                                 Text("Import failed")
                             }
