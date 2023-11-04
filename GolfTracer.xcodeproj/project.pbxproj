@@ -11,7 +11,7 @@
 		826E345D2AF3341C002CAAE7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826E345C2AF3341C002CAAE7 /* ContentView.swift */; };
 		826E345F2AF3341E002CAAE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826E345E2AF3341E002CAAE7 /* Assets.xcassets */; };
 		826E34622AF3341E002CAAE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826E34612AF3341E002CAAE7 /* Preview Assets.xcassets */; };
-		826E34692AF33D43002CAAE7 /* golfTracerModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 826E34682AF33D43002CAAE7 /* golfTracerModel.mlpackage */; };
+		826E346B2AF68AD9002CAAE7 /* golfTracerModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +20,7 @@
 		826E345C2AF3341C002CAAE7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		826E345E2AF3341E002CAAE7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		826E34612AF3341E002CAAE7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		826E34682AF33D43002CAAE7 /* golfTracerModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; name = golfTracerModel.mlpackage; path = ../../../Downloads/golfTracerModel.mlpackage; sourceTree = "<group>"; };
+		826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = golfTracerModel.mlpackage; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,8 +55,8 @@
 			children = (
 				826E345A2AF3341C002CAAE7 /* GolfTracerApp.swift */,
 				826E345C2AF3341C002CAAE7 /* ContentView.swift */,
-				826E34682AF33D43002CAAE7 /* golfTracerModel.mlpackage */,
 				826E345E2AF3341E002CAAE7 /* Assets.xcassets */,
+				826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */,
 				826E34602AF3341E002CAAE7 /* Preview Content */,
 			);
 			path = GolfTracer;
@@ -142,7 +142,7 @@
 			files = (
 				826E345D2AF3341C002CAAE7 /* ContentView.swift in Sources */,
 				826E345B2AF3341C002CAAE7 /* GolfTracerApp.swift in Sources */,
-				826E34692AF33D43002CAAE7 /* golfTracerModel.mlpackage in Sources */,
+				826E346B2AF68AD9002CAAE7 /* golfTracerModel.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

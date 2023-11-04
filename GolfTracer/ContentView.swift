@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVKit
+import AVFoundation
 import PhotosUI
 
 struct Movie: Transferable {
@@ -82,6 +83,11 @@ struct ContentView: View {
                     loadState = .loading
 
                     if let movie = try await selectedItem?.loadTransferable(type: Movie.self) {
+                        do {
+                            try AVAudioSession.sharedInstance().setCategory(.playback)
+                        } catch(let error) {
+                            print(error.localizedDescription)
+                        }
                         loadState = .loaded(movie)
                     } else {
                         loadState = .failed

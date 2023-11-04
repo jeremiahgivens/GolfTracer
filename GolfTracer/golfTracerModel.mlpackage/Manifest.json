@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1.0.0",
+    "itemInfoEntries": {
+        "0903307F-86EC-4E68-B7B8-B8275FD04CCA": {
+            "author": "com.apple.CoreML",
+            "description": "External Metadata Overlay",
+            "name": "Metadata.json",
+            "path": "com.apple.CoreML/Metadata.json"
+        },
+        "2324AF7C-1FFD-4527-93D8-CA8A8938D5F4": {
+            "author": "com.apple.CoreML",
+            "description": "CoreML Model Specification",
+            "name": "golfTracer.mlmodel",
+            "path": "com.apple.CoreML/golfTracer.mlmodel"
+        },
+        "BD03550F-1D94-4E0B-9B3A-AF69576FA4FC": {
+            "author": "com.apple.CoreML",
+            "description": "External FeatureDescription Overlay",
+            "name": "FeatureDescriptions.json",
+            "path": "com.apple.CoreML/FeatureDescriptions.json"
+        }
+    },
+    "rootModelIdentifier": "2324AF7C-1FFD-4527-93D8-CA8A8938D5F4"
+}
