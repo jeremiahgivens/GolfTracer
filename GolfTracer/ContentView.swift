@@ -9,6 +9,10 @@ import SwiftUI
 import AVKit
 import AVFoundation
 import PhotosUI
+import CoreImage
+import CoreGraphics
+import Foundation
+import CoreML
 
 struct Movie: Transferable {
     let url: URL
@@ -28,6 +32,7 @@ struct Movie: Transferable {
         }
     }
 }
+
 
 struct ContentView: View {
     enum LoadState {
@@ -89,6 +94,7 @@ struct ContentView: View {
                             print(error.localizedDescription)
                         }
                         loadState = .loaded(movie)
+                        AnalyzeVideo(inputUrl: movie.url)
                     } else {
                         loadState = .failed
                     }
@@ -96,6 +102,88 @@ struct ContentView: View {
                     loadState = .failed
                 }
             }
+        }
+    }
+    
+    func convertCIImageToCVPixelBuffer(_ image: CIImage) -> CVPixelBuffer? {
+        let context = CIContext()
+
+        let width = Int(image.extent.width)
+        let height = Int(image.extent.height)
+
+        var pixelBuffer: CVPixelBuffer?
+        CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32ARGB, nil, &pixelBuffer)
+
+        if let pixelBuffer = pixelBuffer {
+            context.render(image, to: pixelBuffer)
+            return pixelBuffer
+        }
+
+        return nil
+    }
+    
+    func resizeCIImage(_ image: CIImage) -> CIImage {
+        let targetSize = CGSize(width: 1280, height: 1280)
+        let scaleX = targetSize.width / image.extent.width
+        let scaleY = targetSize.height / image.extent.height
+
+        let scaleTransform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+        return image.transformed(by: scaleTransform)
+    }
+    
+    func resizePixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
+        let width = 1280
+        let height = 1280
+
+
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        let context = CIContext()
+
+        let resizedImage = resizeCIImage(ciImage)
+        
+        if let newPixelBuffer = convertCIImageToCVPixelBuffer(resizedImage){
+            return newPixelBuffer
+        } else {
+            return nil
+        }
+    }
+    
+    func AnalyzeVideo(inputUrl: URL){
+        let asset = AVAsset(url: inputUrl)
+        let reader = try! AVAssetReader(asset: asset)
+
+        let videoTrack = asset.tracks(withMediaType: AVMediaType.video)[0]
+        
+        
+        // read video frames as BGRA
+        let trackReaderOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings:[String(kCVPixelBufferPixelFormatTypeKey): NSNumber(value: kCVPixelFormatType_32BGRA)])
+
+        reader.add(trackReaderOutput)
+        reader.startReading()
+        
+        do {
+            var model = try golfTracerModel()
+            
+            while let sampleBuffer = trackReaderOutput.copyNextSampleBuffer() {
+                print("sample at time \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
+                if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+                    // process each CVPixelBufferRef here
+                    // see CVPixelBufferGetWidth, CVPixelBufferLockBaseAddress, CVPixelBufferGetBaseAddress, etc
+                    guard var resized = resizePixelBuffer(imageBuffer) else { return }
+                    var input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
+                    do {
+                        var predictions = try model.prediction(input: input)
+                        print(predictions.coordinates)
+                        print(predictions.confidence)
+                    } catch {
+                        print("Error trying to read buffer")
+                        return
+                    }
+                    
+                }
+            }
+        } catch {
+            
         }
     }
 }
