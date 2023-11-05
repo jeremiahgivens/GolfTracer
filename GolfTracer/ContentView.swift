@@ -36,11 +36,12 @@ struct Movie: Transferable {
 
 struct ContentView: View {
     enum LoadState {
-        case unknown, loading, loaded(Movie), failed
+        case unknown, loading, loaded, failed
     }
 
     @State private var selectedItem: PhotosPickerItem?
     @State private var loadState = LoadState.unknown
+    @State private var movie: Movie?
     
     var body: some View {
         NavigationView {
@@ -55,18 +56,18 @@ struct ContentView: View {
                                 EmptyView()
                             case .loading:
                                 ProgressView()
-                            case .loaded(let movie):
+                            case .loaded:
                                 NavigationLink("View Video") {
                                     ZStack {
                                         Color.black
                                             .ignoresSafeArea()
-                                        VideoPlayer(player: AVPlayer(url: movie.url))
+                                        VideoPlayer(player: AVPlayer(url: movie!.url))
                                             .frame(maxWidth: .infinity)
                                     }
                                 }
                             case .failed:
                                 Text("Import failed")
-                            }
+                        }
                     }
                     
                     Section {
@@ -75,6 +76,23 @@ struct ContentView: View {
                         }
                         NavigationLink("Trace Time Range") {
                             Text("View coming soon")
+                        }
+                    }
+                    
+                    Section {
+                        switch loadState {
+                            case .unknown:
+                                EmptyView()
+                            case .loading:
+                                ProgressView()
+                            case .loaded:
+                            Button("Analyze Video"){
+                                Task{
+                                    LoadVideoTrack(inputUrl: movie!.url)
+                                }
+                            }
+                            case .failed:
+                                Text("Import failed")
                         }
                     }
                 }
@@ -87,14 +105,14 @@ struct ContentView: View {
                 do {
                     loadState = .loading
 
-                    if let movie = try await selectedItem?.loadTransferable(type: Movie.self) {
+                    if let loadedMovie = try await selectedItem?.loadTransferable(type: Movie.self) {
                         do {
                             try AVAudioSession.sharedInstance().setCategory(.playback)
                         } catch(let error) {
                             print(error.localizedDescription)
                         }
-                        loadState = .loaded(movie)
-                        AnalyzeVideo(inputUrl: movie.url)
+                        loadState = .loaded
+                        self.movie = loadedMovie
                     } else {
                         loadState = .failed
                     }
@@ -132,12 +150,8 @@ struct ContentView: View {
     }
     
     func resizePixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
-        let width = 1280
-        let height = 1280
-
 
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let context = CIContext()
 
         let resizedImage = resizeCIImage(ciImage)
         
@@ -148,44 +162,42 @@ struct ContentView: View {
         }
     }
     
-    func AnalyzeVideo(inputUrl: URL){
+    func LoadVideoTrack(inputUrl: URL){
         let asset = AVAsset(url: inputUrl)
         let reader = try! AVAssetReader(asset: asset)
-
-        let videoTrack = asset.tracks(withMediaType: AVMediaType.video)[0]
-        
-        
+        asset.loadTracks(withMediaType: AVMediaType.video, completionHandler: {videoTrack, error in
+            AnalyzeVideo(videoTrackOptional: videoTrack, error: error, reader: reader, asset: asset)
+        })
+    }
+    
+    func AnalyzeVideo(videoTrackOptional: [AVAssetTrack]?, error: Error?, reader: AVAssetReader, asset: AVAsset){
         // read video frames as BGRA
-        let trackReaderOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings:[String(kCVPixelBufferPixelFormatTypeKey): NSNumber(value: kCVPixelFormatType_32BGRA)])
+        if let videoTrack = videoTrackOptional {
+            let trackReaderOutput = AVAssetReaderTrackOutput(track: videoTrack[0], outputSettings:[String(kCVPixelBufferPixelFormatTypeKey): NSNumber(value: kCVPixelFormatType_32BGRA)])
 
-        reader.add(trackReaderOutput)
-        reader.startReading()
-        
-        do {
-            var model = try golfTracerModel()
+            reader.add(trackReaderOutput)
+            reader.startReading()
             
-            while let sampleBuffer = trackReaderOutput.copyNextSampleBuffer() {
-                print("sample at time \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
-                if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
-                    // process each CVPixelBufferRef here
-                    // see CVPixelBufferGetWidth, CVPixelBufferLockBaseAddress, CVPixelBufferGetBaseAddress, etc
-                    guard var resized = resizePixelBuffer(imageBuffer) else { return }
-                    var input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
-                    do {
-                        var predictions = try model.prediction(input: input)
+            do {
+                let model = try golfTracerModel()
+                
+                while let sampleBuffer = trackReaderOutput.copyNextSampleBuffer() {
+                    print("sample at time \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
+                    if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+                        // process each CVPixelBufferRef here
+                        guard let resized = resizePixelBuffer(imageBuffer) else { return }
+                        let input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
+                        let predictions = try model.prediction(input: input)
                         print(predictions.coordinates)
                         print(predictions.confidence)
-                    } catch {
-                        print("Error trying to read buffer")
-                        return
                     }
-                    
                 }
+            } catch {
+                print("There was an error trying to process your video.")
             }
-        } catch {
-            
         }
     }
+    
 }
 
 #Preview {
