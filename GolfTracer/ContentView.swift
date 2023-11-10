@@ -190,7 +190,7 @@ struct ContentView: View {
             reader.add(trackReaderOutput)
             reader.startReading()
             
-            MakeVideoBirthdayCard(assetTrack: videoTrack[0], asset: asset)
+            AddTraceToVideo(assetTrack: videoTrack[0], asset: asset)
             
             do {
                 let model = try golfTracerModel()
@@ -212,7 +212,7 @@ struct ContentView: View {
         }
     }
     
-    func MakeVideoBirthdayCard(assetTrack: AVAssetTrack, asset: AVAsset) {
+    func AddTraceToVideo(assetTrack: AVAssetTrack, asset: AVAsset) {
         var composition = AVMutableComposition()
         guard
           let compositionTrack = composition.addMutableTrack(
@@ -252,8 +252,6 @@ struct ContentView: View {
           videoSize = assetTrack.naturalSize
         }
         
-        let backgroundLayer = CALayer()
-        backgroundLayer.frame = CGRect(origin: .zero, size: videoSize)
         let videoLayer = CALayer()
         videoLayer.frame = CGRect(origin: .zero, size: videoSize)
         let overlayLayer = CALayer()
@@ -261,24 +259,13 @@ struct ContentView: View {
         
         let outputLayer = CALayer()
         outputLayer.frame = CGRect(origin: .zero, size: videoSize)
-        backgroundLayer.backgroundColor = UIColor(named: "rw-green")?.cgColor
         videoLayer.frame = CGRect(
           x: 20,
           y: 20,
           width: videoSize.width - 40,
           height: videoSize.height - 40)
-        backgroundLayer.contents = UIImage(named: "background")?.cgImage
-        backgroundLayer.contentsGravity = .resizeAspectFill
-        addConfetti(to: overlayLayer)
-        addImage(to: overlayLayer, videoSize: videoSize)
-        /*
-        add(
-          text: "Happy Birthday,\nJerble!",
-          to: overlayLayer,
-          videoSize: videoSize)
-         */
+        
         addBoundingBox(to: overlayLayer, videoSize: videoSize)
-        outputLayer.addSublayer(backgroundLayer)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
@@ -320,7 +307,6 @@ struct ContentView: View {
           DispatchQueue.main.async {
             switch export.status {
             case .completed:
-                //onComplete(exportURL)
                 // Call your method to display the video
                 newVideoURL = exportURL
                 isVideoAnalyzed = true
