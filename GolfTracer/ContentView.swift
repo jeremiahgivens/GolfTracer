@@ -190,7 +190,7 @@ struct ContentView: View {
             reader.add(trackReaderOutput)
             reader.startReading()
             
-            CreateAnnotatedVideo(assetTrack: videoTrack[0], asset: asset)
+            MakeVideoBirthdayCard(assetTrack: videoTrack[0], asset: asset)
             
             do {
                 let model = try golfTracerModel()
@@ -212,7 +212,7 @@ struct ContentView: View {
         }
     }
     
-    func CreateAnnotatedVideo(assetTrack: AVAssetTrack, asset: AVAsset) {
+    func MakeVideoBirthdayCard(assetTrack: AVAssetTrack, asset: AVAsset) {
         var composition = AVMutableComposition()
         guard
           let compositionTrack = composition.addMutableTrack(
@@ -271,10 +271,13 @@ struct ContentView: View {
         backgroundLayer.contentsGravity = .resizeAspectFill
         addConfetti(to: overlayLayer)
         addImage(to: overlayLayer, videoSize: videoSize)
+        /*
         add(
           text: "Happy Birthday,\nJerble!",
           to: overlayLayer,
           videoSize: videoSize)
+         */
+        addBoundingBox(to: overlayLayer, videoSize: videoSize)
         outputLayer.addSublayer(backgroundLayer)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
@@ -438,6 +441,21 @@ struct ContentView: View {
       textLayer.add(scaleAnimation, forKey: "scale")
       
       layer.addSublayer(textLayer)
+    }
+    
+    private func addBoundingBox(to layer: CALayer, videoSize: CGSize){
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
+        
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: videoSize.width/2, y: videoSize.height/2))
+        path.addLine(to: CGPoint(x: videoSize.width/2 + 100, y: videoSize.height/2 + 100))
+        shapeLayer.path = path
+        shapeLayer.strokeColor = UIColor.red.cgColor
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.lineWidth = 20;
+        
+        layer.addSublayer(shapeLayer)
     }
 }
 
