@@ -190,7 +190,9 @@ struct ContentView: View {
             reader.add(trackReaderOutput)
             reader.startReading()
             
-            AddTraceToVideo(assetTrack: videoTrack[0], asset: asset)
+            var coordinates: [[Float]] = [[]]
+            var confidences: [[Float]] = [[]]
+            var timeStamps: [Double] = []
             
             do {
                 let model = try golfTracerModel()
@@ -201,18 +203,33 @@ struct ContentView: View {
                         // process each CVPixelBufferRef here
                         guard let resized = resizePixelBuffer(imageBuffer) else { return }
                         let input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
-                        let predictions = try model.prediction(input: input)
-                        print(predictions.coordinates)
-                        print(predictions.confidence)
+                        let preds = try model.prediction(input: input)
+                        
+                        if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
+                          let c = Array(b)
+                            coordinates.append(c)
+                        }
+                        
+                        if let b = try? UnsafeBufferPointer<Float>(preds.confidence) {
+                          let c = Array(b)
+                            confidences.append(c)
+                        }
+                        
+                        
+                        let presTime = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer);
+                        let frameTime = CMTimeGetSeconds(presTime);
+                        timeStamps.append(frameTime)
                     }
                 }
+                AddTraceToVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
             } catch {
                 print("There was an error trying to process your video.")
             }
         }
     }
     
-    func AddTraceToVideo(assetTrack: AVAssetTrack, asset: AVAsset) {
+    func AddTraceToVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[Float]], confidences: [[Float]], timeStamps: [Double]) {
+        print(coordinates)
         var composition = AVMutableComposition()
         guard
           let compositionTrack = composition.addMutableTrack(
