@@ -42,7 +42,7 @@ struct ContentView: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var loadState = LoadState.unknown
     @State private var movie: Movie?
-    @State private var isVideoAnalyzed = false
+    @State private var videoAnalysisState = LoadState.unknown
     @State private var newVideoURL: URL?
     
     var body: some View {
@@ -89,6 +89,7 @@ struct ContentView: View {
                                 ProgressView()
                             case .loaded:
                             Button("Analyze Video"){
+                                videoAnalysisState = .loading
                                 Task{
                                     LoadVideoTrack(inputUrl: movie!.url)
                                 }
@@ -96,7 +97,12 @@ struct ContentView: View {
                             case .failed:
                                 Text("Import failed")
                         }
-                        if (isVideoAnalyzed){
+                        switch videoAnalysisState {
+                        case .unknown:
+                            EmptyView()
+                        case .loading:
+                            ProgressView()
+                        case .loaded:
                             NavigationLink("View Analyzed Video") {
                                 ZStack {
                                     Color.black
@@ -105,6 +111,8 @@ struct ContentView: View {
                                         .frame(maxWidth: .infinity)
                                 }
                             }
+                        case .failed:
+                            Text("Video analysis failed.")
                         }
                     }
                 }
@@ -190,9 +198,9 @@ struct ContentView: View {
             reader.add(trackReaderOutput)
             reader.startReading()
             
-            var coordinates: [[Float]] = [[]]
-            var confidences: [[Float]] = [[]]
-            var timeStamps: [Double] = []
+            var coordinates = [[[Float]]]()
+            var confidences = [[[Float]]]()
+            var timeStamps = [Double]()
             
             do {
                 let model = try golfTracerModel()
@@ -206,13 +214,29 @@ struct ContentView: View {
                         let preds = try model.prediction(input: input)
                         
                         if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
-                          let c = Array(b)
-                            coordinates.append(c)
+                            let c = Array(b)
+                            var output = [[Float]]()
+                            for object in 0..<c.count/4{
+                                var coord = [Float]()
+                                for element in 0..<4{
+                                    coord.append(c[object + element])
+                                }
+                                output.append(coord)
+                            }
+                            coordinates.append(output)
                         }
                         
                         if let b = try? UnsafeBufferPointer<Float>(preds.confidence) {
-                          let c = Array(b)
-                            confidences.append(c)
+                            let c = Array(b)
+                            var output = [[Float]]()
+                            for object in 0..<c.count/2{
+                                var conf = [Float]()
+                                for element in 0..<2{
+                                    conf.append(c[object + element])
+                                }
+                                output.append(conf)
+                            }
+                            confidences.append(output)
                         }
                         
                         
@@ -221,14 +245,14 @@ struct ContentView: View {
                         timeStamps.append(frameTime)
                     }
                 }
-                AddTraceToVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
+                AnnotateVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
             } catch {
                 print("There was an error trying to process your video.")
             }
         }
     }
     
-    func AddTraceToVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[Float]], confidences: [[Float]], timeStamps: [Double]) {
+    func AnnotateVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]) {
         print(coordinates)
         var composition = AVMutableComposition()
         guard
@@ -253,7 +277,9 @@ struct ContentView: View {
                 at: .zero)
             }
         } catch {
+            print("Something went wrong while creating new video.")
             print(error)
+            videoAnalysisState = .failed
             return
         }
         
@@ -326,7 +352,7 @@ struct ContentView: View {
             case .completed:
                 // Call your method to display the video
                 newVideoURL = exportURL
-                isVideoAnalyzed = true
+                videoAnalysisState = .loaded
                 break
             default:
               print("Something went wrong during export.")
@@ -450,9 +476,7 @@ struct ContentView: View {
         let shapeLayer = CAShapeLayer()
         shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
         
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: videoSize.width/2, y: videoSize.height/2))
-        path.addLine(to: CGPoint(x: videoSize.width/2 + 100, y: videoSize.height/2 + 100))
+        let path = CGPath(rect: CGRect(x: 250, y: 250, width: 30, height: 30), transform: nil)
         shapeLayer.path = path
         shapeLayer.strokeColor = UIColor.red.cgColor
         shapeLayer.fillColor = UIColor.clear.cgColor
