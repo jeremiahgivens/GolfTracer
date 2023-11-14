@@ -187,14 +187,14 @@ struct ContentView: View {
     
     func LoadVideoTrack(inputUrl: URL){
         let asset = AVAsset(url: inputUrl)
-        let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
         let reader = try! AVAssetReader(asset: asset)
         asset.loadTracks(withMediaType: AVMediaType.video, completionHandler: {videoTrack, error in
-            AnalyzeVideo(videoTrackOptional: videoTrack, error: error, reader: reader, asset: asset, timeRange: timeRange)
+            AnalyzeVideo(videoTrackOptional: videoTrack, error: error, reader: reader, asset: asset)
         })
     }
     
-    func AnalyzeVideo(videoTrackOptional: [AVAssetTrack]?, error: Error?, reader: AVAssetReader, asset: AVAsset, timeRange: CMTimeRange){
+    func AnalyzeVideo(videoTrackOptional: [AVAssetTrack]?, error: Error?, reader: AVAssetReader, asset: AVAsset){
+        
         // read video frames as BGRA
         if let videoTrack = videoTrackOptional {
             let trackReaderOutput = AVAssetReaderTrackOutput(track: videoTrack[0], outputSettings:[String(kCVPixelBufferPixelFormatTypeKey): NSNumber(value: kCVPixelFormatType_32BGRA)])
@@ -247,16 +247,22 @@ struct ContentView: View {
                         let presTime = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer);
                         let frameTime = CMTimeGetSeconds(presTime);
                         timeStamps.append(frameTime)
+                        
+                        if (timeStamps.count > 10){
+                            // This was a temporary fix to find the source of the crash
+                            break;
+                        }
                     }
                 }
-                AnnotateVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps, timeRange: timeRange)
             } catch {
                 print("There was an error trying to process your video.")
+                return
             }
+            AnnotateVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         }
     }
     
-    func AnnotateVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double], timeRange: CMTimeRange) {
+    func AnnotateVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]) {
         print(coordinates)
         var composition = AVMutableComposition()
         guard
@@ -268,6 +274,7 @@ struct ContentView: View {
         }
         
         do {
+            let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
             try compositionTrack.insertTimeRange(timeRange, of: assetTrack, at: .zero)
             
             if let audioAssetTrack = asset.tracks(withMediaType: .audio).first,
