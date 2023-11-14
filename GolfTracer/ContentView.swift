@@ -166,7 +166,10 @@ struct ContentView: View {
         let scaleY = targetSize.height / image.extent.height
 
         let scaleTransform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-        return image.transformed(by: scaleTransform)
+        
+        var newImage = image.transformed(by: scaleTransform)
+        
+        return newImage
     }
     
     func resizePixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
@@ -184,13 +187,14 @@ struct ContentView: View {
     
     func LoadVideoTrack(inputUrl: URL){
         let asset = AVAsset(url: inputUrl)
+        let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
         let reader = try! AVAssetReader(asset: asset)
         asset.loadTracks(withMediaType: AVMediaType.video, completionHandler: {videoTrack, error in
-            AnalyzeVideo(videoTrackOptional: videoTrack, error: error, reader: reader, asset: asset)
+            AnalyzeVideo(videoTrackOptional: videoTrack, error: error, reader: reader, asset: asset, timeRange: timeRange)
         })
     }
     
-    func AnalyzeVideo(videoTrackOptional: [AVAssetTrack]?, error: Error?, reader: AVAssetReader, asset: AVAsset){
+    func AnalyzeVideo(videoTrackOptional: [AVAssetTrack]?, error: Error?, reader: AVAssetReader, asset: AVAsset, timeRange: CMTimeRange){
         // read video frames as BGRA
         if let videoTrack = videoTrackOptional {
             let trackReaderOutput = AVAssetReaderTrackOutput(track: videoTrack[0], outputSettings:[String(kCVPixelBufferPixelFormatTypeKey): NSNumber(value: kCVPixelFormatType_32BGRA)])
@@ -245,14 +249,14 @@ struct ContentView: View {
                         timeStamps.append(frameTime)
                     }
                 }
-                AnnotateVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
+                AnnotateVideo(assetTrack: videoTrack[0], asset: asset, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps, timeRange: timeRange)
             } catch {
                 print("There was an error trying to process your video.")
             }
         }
     }
     
-    func AnnotateVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]) {
+    func AnnotateVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double], timeRange: CMTimeRange) {
         print(coordinates)
         var composition = AVMutableComposition()
         guard
@@ -264,7 +268,6 @@ struct ContentView: View {
         }
         
         do {
-            let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
             try compositionTrack.insertTimeRange(timeRange, of: assetTrack, at: .zero)
             
             if let audioAssetTrack = asset.tracks(withMediaType: .audio).first,
@@ -308,7 +311,7 @@ struct ContentView: View {
           width: videoSize.width - 40,
           height: videoSize.height - 40)
         
-        addBoundingBox(to: overlayLayer, videoSize: videoSize)
+        addBoundingBox(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
@@ -472,17 +475,24 @@ struct ContentView: View {
       layer.addSublayer(textLayer)
     }
     
-    private func addBoundingBox(to layer: CALayer, videoSize: CGSize){
+    private func addBoundingBox(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
         let shapeLayer = CAShapeLayer()
         shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
+        var box = CGRect(x: Double(coordinates[0][0][0]), y: Double(coordinates[0][0][1]), width: Double(coordinates[0][0][2]), height: Double(coordinates[0][0][3]))
         
-        let path = CGPath(rect: CGRect(x: 250, y: 250, width: 30, height: 30), transform: nil)
+        let path = CGPath(rect: localToPixel(local: box, videoSize: videoSize), transform: nil)
         shapeLayer.path = path
         shapeLayer.strokeColor = UIColor.red.cgColor
         shapeLayer.fillColor = UIColor.clear.cgColor
         shapeLayer.lineWidth = 20;
         
         layer.addSublayer(shapeLayer)
+    }
+    
+    private func localToPixel(local: CGRect, videoSize: CGSize) -> CGRect{
+        var pixelRect = CGRect(x: local.midX*videoSize.width, y: local.midY*videoSize.height, width: local.width*videoSize.width, height: local.height*videoSize.height)
+        
+        return pixelRect
     }
 }
 

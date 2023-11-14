@@ -14,9 +14,9 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "312"
-            endingLineNumber = "312"
-            landmarkName = "AnnotateVideo(assetTrack:asset:coordinates:confidences:timeStamps:)"
+            startingLineNumber = "315"
+            endingLineNumber = "315"
+            landmarkName = "AnnotateVideo(assetTrack:asset:coordinates:confidences:timeStamps:timeRange:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -24,14 +24,204 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "79AC583D-1E20-4036-82B8-94572CEEDD5D"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "227"
-            endingLineNumber = "227"
+            startingLineNumber = "231"
+            endingLineNumber = "231"
+            landmarkName = "AnalyzeVideo(videoTrackOptional:error:reader:asset:timeRange:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "79AC583D-1E20-4036-82B8-94572CEEDD5D - c0f26b7dcd7a16f5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnalyzeVideo(videoTrackOptional: Swift.Optional&lt;Swift.Array&lt;__C.AVAssetTrack&gt;&gt;, error: Swift.Optional&lt;Swift.Error&gt;, reader: __C.AVAssetReader, asset: __C.AVAsset) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "227"
+                  endingLineNumber = "227"
+                  offsetFromSymbolStart = "3192">
+               </Location>
+               <Location
+                  uuid = "79AC583D-1E20-4036-82B8-94572CEEDD5D - c0f26b7dcd7a16f5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnalyzeVideo(videoTrackOptional: Swift.Optional&lt;Swift.Array&lt;__C.AVAssetTrack&gt;&gt;, error: Swift.Optional&lt;Swift.Error&gt;, reader: __C.AVAssetReader, asset: __C.AVAsset) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "227"
+                  endingLineNumber = "227"
+                  offsetFromSymbolStart = "2904">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "51726AD6-ED37-4B21-8FCD-EC5DE48483A0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
+            landmarkName = "AnalyzeVideo(videoTrackOptional:error:reader:asset:timeRange:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "51726AD6-ED37-4B21-8FCD-EC5DE48483A0 - c0f26b7dcd7a6806"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnalyzeVideo(videoTrackOptional: Swift.Optional&lt;Swift.Array&lt;__C.AVAssetTrack&gt;&gt;, error: Swift.Optional&lt;Swift.Error&gt;, reader: __C.AVAssetReader, asset: __C.AVAsset) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "240"
+                  endingLineNumber = "240"
+                  offsetFromSymbolStart = "4628">
+               </Location>
+               <Location
+                  uuid = "51726AD6-ED37-4B21-8FCD-EC5DE48483A0 - c0f26b7dcd7a6806"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnalyzeVideo(videoTrackOptional: Swift.Optional&lt;Swift.Array&lt;__C.AVAssetTrack&gt;&gt;, error: Swift.Optional&lt;Swift.Error&gt;, reader: __C.AVAssetReader, asset: __C.AVAsset) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "240"
+                  endingLineNumber = "240"
+                  offsetFromSymbolStart = "4292">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EA40CAE0-2B7F-4CF7-998F-8893880AFD3B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "483"
+            endingLineNumber = "483"
+            landmarkName = "addBoundingBox(to:videoSize:coordinates:confidences:timeStamps:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EA40CAE0-2B7F-4CF7-998F-8893880AFD3B - 360bcabca3ed880"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.addBoundingBox(to: __C.CALayer, videoSize: __C.CGSize, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "480"
+                  endingLineNumber = "480"
+                  offsetFromSymbolStart = "824">
+               </Location>
+               <Location
+                  uuid = "EA40CAE0-2B7F-4CF7-998F-8893880AFD3B - 360bcabca3ed80c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.addBoundingBox(to: __C.CALayer, videoSize: __C.CGSize, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "484"
+                  endingLineNumber = "484"
+                  offsetFromSymbolStart = "824">
+               </Location>
+               <Location
+                  uuid = "EA40CAE0-2B7F-4CF7-998F-8893880AFD3B - 360bcabca3ee6b1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.addBoundingBox(to: __C.CALayer, videoSize: __C.CGSize, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "497"
+                  endingLineNumber = "497"
+                  offsetFromSymbolStart = "824">
+               </Location>
+               <Location
+                  uuid = "EA40CAE0-2B7F-4CF7-998F-8893880AFD3B - 360bcabca3ee690"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.addBoundingBox(to: __C.CALayer, videoSize: __C.CGSize, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "496"
+                  endingLineNumber = "496"
+                  offsetFromSymbolStart = "824">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CDEC7900-C781-48CB-A4EC-35A093D96936"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
+            landmarkName = "resizeCIImage(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "30615540-19E9-40AA-9F0C-DDD63DC1C229"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
             landmarkName = "AnalyzeVideo(videoTrackOptional:error:reader:asset:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -39,16 +229,191 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "51726AD6-ED37-4B21-8FCD-EC5DE48483A0"
+            uuid = "72664F6D-0751-447A-8F79-485315CEAA65"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "437"
+            endingLineNumber = "437"
+            landmarkName = "orientation(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E764478E-2B4C-4AFC-8DA9-BF541063CA87"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "209"
+            endingLineNumber = "209"
+            landmarkName = "AnalyzeVideo(videoTrackOptional:error:reader:asset:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E764478E-2B4C-4AFC-8DA9-BF541063CA87 - c0f26b7dcd7a152c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnalyzeVideo(videoTrackOptional: Swift.Optional&lt;Swift.Array&lt;__C.AVAssetTrack&gt;&gt;, error: Swift.Optional&lt;Swift.Error&gt;, reader: __C.AVAssetReader, asset: __C.AVAsset) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "218"
+                  endingLineNumber = "218"
+                  offsetFromSymbolStart = "776">
+               </Location>
+               <Location
+                  uuid = "E764478E-2B4C-4AFC-8DA9-BF541063CA87 - c0f26b7dcd7a1407"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnalyzeVideo(videoTrackOptional: Swift.Optional&lt;Swift.Array&lt;__C.AVAssetTrack&gt;&gt;, error: Swift.Optional&lt;Swift.Error&gt;, reader: __C.AVAssetReader, asset: __C.AVAsset) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "209"
+                  endingLineNumber = "209"
+                  offsetFromSymbolStart = "776">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CE8D2309-B7EB-4D00-A8DD-EE4CA378DDBC"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "240"
-            endingLineNumber = "240"
-            landmarkName = "AnalyzeVideo(videoTrackOptional:error:reader:asset:)"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
+            landmarkName = "AnnotateVideo(assetTrack:asset:coordinates:confidences:timeStamps:timeRange:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "CE8D2309-B7EB-4D00-A8DD-EE4CA378DDBC - 7443de46a8ccfdb4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnnotateVideo(assetTrack: __C.AVAssetTrack, asset: __C.AVAsset, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "277"
+                  endingLineNumber = "277"
+                  offsetFromSymbolStart = "1144">
+               </Location>
+               <Location
+                  uuid = "CE8D2309-B7EB-4D00-A8DD-EE4CA378DDBC - 7443de46a8ccfc55"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnnotateVideo(assetTrack: __C.AVAssetTrack, asset: __C.AVAsset, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "276"
+                  endingLineNumber = "276"
+                  offsetFromSymbolStart = "1144">
+               </Location>
+               <Location
+                  uuid = "CE8D2309-B7EB-4D00-A8DD-EE4CA378DDBC - 1c9852c201105658"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.AnnotateVideo(assetTrack: __C.AVAssetTrack, asset: __C.AVAsset, coordinates: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, confidences: Swift.Array&lt;Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;&gt;, timeStamps: Swift.Array&lt;Swift.Double&gt;, timeRange: __C.CMTimeRange) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "271"
+                  endingLineNumber = "271"
+                  offsetFromSymbolStart = "1184">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F9C5B3C7-F836-4E40-8613-E7D975ADDF15"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "191"
+            endingLineNumber = "191"
+            landmarkName = "LoadVideoTrack(inputUrl:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "F9C5B3C7-F836-4E40-8613-E7D975ADDF15 - 694af0e31fff329e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.LoadVideoTrack(inputUrl: Foundation.URL) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "191"
+                  endingLineNumber = "191"
+                  offsetFromSymbolStart = "484">
+               </Location>
+               <Location
+                  uuid = "F9C5B3C7-F836-4E40-8613-E7D975ADDF15 - 694af0e31fff329e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GolfTracer.ContentView.LoadVideoTrack(inputUrl: Foundation.URL) -&gt; ()"
+                  moduleName = "GolfTracer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "191"
+                  endingLineNumber = "191"
+                  offsetFromSymbolStart = "464">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E25086B0-250B-4825-A01E-7255BE6C7224"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "273"
+            endingLineNumber = "273"
+            landmarkName = "AnnotateVideo(assetTrack:asset:coordinates:confidences:timeStamps:timeRange:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
