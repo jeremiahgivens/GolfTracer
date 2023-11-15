@@ -213,44 +213,42 @@ struct ContentView: View {
                     print("sample at time \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
                     if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
                         // process each CVPixelBufferRef here
-                        guard let resized = resizePixelBuffer(imageBuffer) else { return }
-                        let input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
-                        let preds = try model.prediction(input: input)
-                        
-                        if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
-                            let c = Array(b)
-                            var output = [[Float]]()
-                            for object in 0..<c.count/4{
-                                var coord = [Float]()
-                                for element in 0..<4{
-                                    coord.append(c[object + element])
+                        try autoreleasepool {
+                            guard let resized = resizePixelBuffer(imageBuffer) else { return }
+                            
+                            let input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
+                            let preds = try model.prediction(input: input)
+
+                            if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
+                                let c = Array(b)
+                                var output = [[Float]]()
+                                for object in 0..<c.count/4{
+                                    var coord = [Float]()
+                                    for element in 0..<4{
+                                        coord.append(c[object + element])
+                                    }
+                                    output.append(coord)
                                 }
-                                output.append(coord)
+                                coordinates.append(output)
                             }
-                            coordinates.append(output)
-                        }
-                        
-                        if let b = try? UnsafeBufferPointer<Float>(preds.confidence) {
-                            let c = Array(b)
-                            var output = [[Float]]()
-                            for object in 0..<c.count/2{
-                                var conf = [Float]()
-                                for element in 0..<2{
-                                    conf.append(c[object + element])
+                            
+                            if let b = try? UnsafeBufferPointer<Float>(preds.confidence) {
+                                let c = Array(b)
+                                var output = [[Float]]()
+                                for object in 0..<c.count/2{
+                                    var conf = [Float]()
+                                    for element in 0..<2{
+                                        conf.append(c[object + element])
+                                    }
+                                    output.append(conf)
                                 }
-                                output.append(conf)
+                                confidences.append(output)
                             }
-                            confidences.append(output)
-                        }
-                        
-                        
-                        let presTime = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer);
-                        let frameTime = CMTimeGetSeconds(presTime);
-                        timeStamps.append(frameTime)
-                        
-                        if (timeStamps.count > 10){
-                            // This was a temporary fix to find the source of the crash
-                            break;
+                            
+                            
+                            let presTime = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer);
+                            let frameTime = CMTimeGetSeconds(presTime);
+                            timeStamps.append(frameTime)
                         }
                     }
                 }
