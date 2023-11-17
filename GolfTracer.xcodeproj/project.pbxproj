@@ -12,6 +12,7 @@
 		826E345F2AF3341E002CAAE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826E345E2AF3341E002CAAE7 /* Assets.xcassets */; };
 		826E34622AF3341E002CAAE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826E34612AF3341E002CAAE7 /* Preview Assets.xcassets */; };
 		826E346B2AF68AD9002CAAE7 /* golfTracerModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */; };
+		827E02672B0713C400B6E137 /* TrackSS in Frameworks */ = {isa = PBXBuildFile; productRef = 827E02662B0713C400B6E137 /* TrackSS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				827E02672B0713C400B6E137 /* TrackSS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +88,9 @@
 			dependencies = (
 			);
 			name = GolfTracer;
+			packageProductDependencies = (
+				827E02662B0713C400B6E137 /* TrackSS */,
+			);
 			productName = GolfTracer;
 			productReference = 826E34572AF3341C002CAAE7 /* GolfTracer.app */;
 			productType = "com.apple.product-type.application";
@@ -114,6 +119,9 @@
 				Base,
 			);
 			mainGroup = 826E344E2AF3341C002CAAE7;
+			packageReferences = (
+				827E02652B0713C400B6E137 /* XCRemoteSwiftPackageReference "TrackSS" */,
+			);
 			productRefGroup = 826E34582AF3341C002CAAE7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -348,6 +356,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		827E02652B0713C400B6E137 /* XCRemoteSwiftPackageReference "TrackSS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ShreshthSaxena/TrackSS/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		827E02662B0713C400B6E137 /* TrackSS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 827E02652B0713C400B6E137 /* XCRemoteSwiftPackageReference "TrackSS" */;
+			productName = TrackSS;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 826E344F2AF3341C002CAAE7 /* Project object */;
 }

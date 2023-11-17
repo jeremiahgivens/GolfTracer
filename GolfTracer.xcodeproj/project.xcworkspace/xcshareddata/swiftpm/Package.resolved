@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "kalmanfilter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ShreshthSaxena/KalmanFilter.git",
+      "state" : {
+        "revision" : "f4769de4acc069a707ad5d65bf9da1c415e3d0c2",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "trackss",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ShreshthSaxena/TrackSS/",
+      "state" : {
+        "revision" : "148d66bcaa5fb80f28f77d42a24de1262cd95b95",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "upsurge",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ShreshthSaxena/Upsurge.git",
+      "state" : {
+        "revision" : "a410d7ff379e859d1afe2d2820b0d63dd4bcaeda",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

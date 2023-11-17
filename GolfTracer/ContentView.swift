@@ -13,6 +13,7 @@ import CoreImage
 import CoreGraphics
 import Foundation
 import CoreML
+import TrackSS
 
 struct Movie: Transferable {
     let url: URL
@@ -493,6 +494,8 @@ struct ContentView: View {
         let pathAnimation = CAKeyframeAnimation(keyPath: "path")
         var paths = [CGPath]()
         var keyTimes = [Double]()
+        
+        let T = TrackerSS()
         
         for frame in 0..<coordinates.count{
             var path = CGMutablePath()
