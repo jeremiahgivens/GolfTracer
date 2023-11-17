@@ -172,11 +172,15 @@ struct ContentView: View {
         return newImage
     }
     
-    func resizePixelBuffer(_ pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
+    func resizePixelBuffer(_ pixelBuffer: CVPixelBuffer, imageOrientation: UIImage.Orientation) -> CVPixelBuffer? {
 
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
 
-        let resizedImage = resizeCIImage(ciImage)
+        var resizedImage = resizeCIImage(ciImage)
+        
+        if (imageOrientation == UIImage.Orientation.right){
+            resizedImage = resizedImage.oriented(.right)
+        }
         
         if let newPixelBuffer = convertCIImageToCVPixelBuffer(resizedImage){
             return newPixelBuffer
@@ -206,6 +210,8 @@ struct ContentView: View {
             var confidences = [[[Float]]]()
             var timeStamps = [Double]()
             
+            let videoInfo = orientation(from: videoTrack[0].preferredTransform)
+            
             do {
                 let model = try golfTracerModel()
                 
@@ -214,7 +220,7 @@ struct ContentView: View {
                     if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
                         // process each CVPixelBufferRef here
                         try autoreleasepool {
-                            guard let resized = resizePixelBuffer(imageBuffer) else { return }
+                            guard let resized = resizePixelBuffer(imageBuffer, imageOrientation: videoInfo.orientation) else { return }
                             
                             let input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
                             let preds = try model.prediction(input: input)
@@ -225,7 +231,7 @@ struct ContentView: View {
                                 for object in 0..<c.count/4{
                                     var coord = [Float]()
                                     for element in 0..<4{
-                                        coord.append(c[object + element])
+                                        coord.append(c[object*4 + element])
                                     }
                                     output.append(coord)
                                 }
@@ -238,7 +244,7 @@ struct ContentView: View {
                                 for object in 0..<c.count/2{
                                     var conf = [Float]()
                                     for element in 0..<2{
-                                        conf.append(c[object + element])
+                                        conf.append(c[object*2 + element])
                                     }
                                     output.append(conf)
                                 }
@@ -483,21 +489,54 @@ struct ContentView: View {
     private func addBoundingBox(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
         let shapeLayer = CAShapeLayer()
         shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
-        var box = CGRect(x: Double(coordinates[0][0][0]), y: Double(coordinates[0][0][1]), width: Double(coordinates[0][0][2]), height: Double(coordinates[0][0][3]))
         
-        let path = CGPath(rect: localToPixel(local: box, videoSize: videoSize), transform: nil)
-        shapeLayer.path = path
+        let pathAnimation = CAKeyframeAnimation(keyPath: "path")
+        var paths = [CGPath]()
+        var keyTimes = [Double]()
+        
+        for frame in 0..<coordinates.count{
+            var path = CGMutablePath()
+            for i in 0..<coordinates[frame].count {
+                if (confidences[frame][i][1] > confidences[frame][i][0]){
+                    var box = CGRect(x: Double(coordinates[frame][i][0]), y: 1 - Double(coordinates[frame][i][1]), width: Double(coordinates[frame][i][2]), height: Double(coordinates[frame][i][3]))
+                    
+                    let rectPath = CGPath(rect: LocalToShiftedPixelRect(local: box, videoSize: videoSize), transform: nil)
+                    path.addPath(rectPath)
+                }
+            }
+            paths.append(path)
+            keyTimes.append(timeStamps[frame]/timeStamps.last!)
+        }
+        
+        pathAnimation.values = paths
+        pathAnimation.keyTimes = keyTimes as [NSNumber]
+        pathAnimation.beginTime = AVCoreAnimationBeginTimeAtZero
+        pathAnimation.duration = timeStamps.last! + timeStamps[1]
+        
+        shapeLayer.add(pathAnimation, forKey: "path")
+        
+        //shapeLayer.path = paths[0]
         shapeLayer.strokeColor = UIColor.red.cgColor
         shapeLayer.fillColor = UIColor.clear.cgColor
-        shapeLayer.lineWidth = 20;
+        shapeLayer.lineWidth = 3;
         
         layer.addSublayer(shapeLayer)
     }
     
     private func localToPixel(local: CGRect, videoSize: CGSize) -> CGRect{
-        var pixelRect = CGRect(x: local.midX*videoSize.width, y: local.midY*videoSize.height, width: local.width*videoSize.width, height: local.height*videoSize.height)
+        var pixelRect = CGRect(x: local.minX*videoSize.width, y: local.minY*videoSize.height, width: local.width*videoSize.width, height: local.height*videoSize.height)
         
         return pixelRect
+    }
+    
+    private func ShiftForRectangleCenter(local: CGRect) -> CGRect{
+        var shiftedRect = CGRect(x: local.minX - local.width/2, y: local.minY - local.height/2, width: local.width, height: local.height)
+        
+        return shiftedRect
+    }
+    
+    private func LocalToShiftedPixelRect(local: CGRect, videoSize: CGSize) -> CGRect{
+        return localToPixel(local: ShiftForRectangleCenter(local: local), videoSize: videoSize)
     }
 }
 
