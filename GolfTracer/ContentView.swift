@@ -323,7 +323,7 @@ struct ContentView: View {
           width: videoSize.width - 40,
           height: videoSize.height - 40)
         
-        addBoundingBox(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
+        addTrace(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
@@ -487,26 +487,68 @@ struct ContentView: View {
       layer.addSublayer(textLayer)
     }
     
-    private func addBoundingBox(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
+    private func addTrace(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
         let shapeLayer = CAShapeLayer()
         shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
         
         let pathAnimation = CAKeyframeAnimation(keyPath: "path")
         var paths = [CGPath]()
         var keyTimes = [Double]()
+        var tracks: [Int: [[Double]]] = [:]
         
         let T = TrackerSS()
-        
         for frame in 0..<coordinates.count{
-            var path = CGMutablePath()
+            var inputs = [[Double]]()
+            // Find all of the club heads in this frame
             for i in 0..<coordinates[frame].count {
                 if (confidences[frame][i][1] > confidences[frame][i][0]){
-                    var box = CGRect(x: Double(coordinates[frame][i][0]), y: 1 - Double(coordinates[frame][i][1]), width: Double(coordinates[frame][i][2]), height: Double(coordinates[frame][i][3]))
+                    var cord = coordinates[frame][i]
                     
-                    let rectPath = CGPath(rect: LocalToShiftedPixelRect(local: box, videoSize: videoSize), transform: nil)
-                    path.addPath(rectPath)
+                    var detection = [Double]()
+                    // format is [x1, y1, x2, y2] (bottom left - top right)
+                    detection.append(Double(cord[0] - cord[2]/2))
+                    detection.append(Double(cord[1] - cord[3]/2))
+                    detection.append(Double(cord[0] + cord[2]/2))
+                    detection.append(Double(cord[1] + cord[3]/2))
+                    
+                    inputs.append(detection)
                 }
             }
+            
+            // Associate these detections with the previously tracked detections
+            var output = T.update(dets: inputs)
+            
+            for j in 0..<output.count{
+                var trackID = Int(output[j][4])
+                if (!tracks.keys.contains(trackID)){
+                    tracks[trackID] = [[Double]]()
+                }
+                tracks[trackID]!.append(output[j])
+            }
+            
+            var path = CGMutablePath()
+            
+            // Now for this frame, draw a subpath for every track so far:
+            for key in tracks.keys{
+                var subPath = CGMutablePath()
+                for j in 0..<tracks[key]!.count{
+                    var box = tracks[key]![j]
+                    var point = CGPoint(x: (box[0] + box[2])/2, y: 1 - (box[1] + box[3])/2)
+                    var pixelPoint = LocalToPixel(local: point, videoSize: videoSize)
+                    /*
+                    if (j == 0){
+                        subPath.move(to: pixelPoint)
+                    } else {
+                        subPath.addLine(to: pixelPoint)
+                    }
+                     */
+                    
+                    subPath.addRect(CGRect(x: pixelPoint.x - 2, y: pixelPoint.y - 2, width: 4, height: 4))
+                }
+                path.addPath(subPath)
+            }
+            
+            
             paths.append(path)
             keyTimes.append(timeStamps[frame]/timeStamps.last!)
         }
@@ -526,7 +568,53 @@ struct ContentView: View {
         layer.addSublayer(shapeLayer)
     }
     
-    private func localToPixel(local: CGRect, videoSize: CGSize) -> CGRect{
+    private func addBoundingBox(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
+        
+        let pathAnimation = CAKeyframeAnimation(keyPath: "path")
+        var paths = [CGPath]()
+        var keyTimes = [Double]()
+        
+        for frame in 0..<coordinates.count{
+            var path = CGMutablePath()
+            var inputs = [[Double]]()
+            for i in 0..<coordinates[frame].count {
+                if (confidences[frame][i][1] > confidences[frame][i][0]){
+                    var cord = coordinates[frame][i]
+                    var box = CGRect(x: Double(cord[0]), y: 1 - Double(cord[1]), width: Double(cord[2]), height: Double(cord[3]))
+                    
+                    let rectPath = CGPath(rect: LocalToShiftedPixelRect(local: box, videoSize: videoSize), transform: nil)
+                    path.addPath(rectPath)
+                }
+            }
+            
+            paths.append(path)
+            keyTimes.append(timeStamps[frame]/timeStamps.last!)
+        }
+        
+        pathAnimation.values = paths
+        pathAnimation.keyTimes = keyTimes as [NSNumber]
+        pathAnimation.beginTime = AVCoreAnimationBeginTimeAtZero
+        pathAnimation.duration = timeStamps.last! + timeStamps[1]
+        
+        shapeLayer.add(pathAnimation, forKey: "path")
+        
+        //shapeLayer.path = paths[0]
+        shapeLayer.strokeColor = UIColor.red.cgColor
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.lineWidth = 3;
+        
+        layer.addSublayer(shapeLayer)
+    }
+    
+    private func LocalToPixel(local: CGPoint, videoSize: CGSize) -> CGPoint{
+        var pixel = CGPoint(x: local.x*videoSize.width, y: local.y*videoSize.height)
+        
+        return pixel
+    }
+    
+    private func LocalRectToPixelRect(local: CGRect, videoSize: CGSize) -> CGRect{
         var pixelRect = CGRect(x: local.minX*videoSize.width, y: local.minY*videoSize.height, width: local.width*videoSize.width, height: local.height*videoSize.height)
         
         return pixelRect
@@ -539,7 +627,7 @@ struct ContentView: View {
     }
     
     private func LocalToShiftedPixelRect(local: CGRect, videoSize: CGSize) -> CGRect{
-        return localToPixel(local: ShiftForRectangleCenter(local: local), videoSize: videoSize)
+        return LocalRectToPixelRect(local: ShiftForRectangleCenter(local: local), videoSize: videoSize)
     }
 }
 
