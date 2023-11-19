@@ -323,7 +323,7 @@ struct ContentView: View {
           width: videoSize.width - 40,
           height: videoSize.height - 40)
         
-        addTrace(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
+        addDetectionDots(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
@@ -556,7 +556,8 @@ struct ContentView: View {
         pathAnimation.values = paths
         pathAnimation.keyTimes = keyTimes as [NSNumber]
         pathAnimation.beginTime = AVCoreAnimationBeginTimeAtZero
-        pathAnimation.duration = timeStamps.last! + timeStamps[1]
+        pathAnimation.duration = timeStamps.last!
+        pathAnimation.calculationMode = .discrete
         
         shapeLayer.add(pathAnimation, forKey: "path")
         
@@ -578,7 +579,6 @@ struct ContentView: View {
         
         for frame in 0..<coordinates.count{
             var path = CGMutablePath()
-            var inputs = [[Double]]()
             for i in 0..<coordinates[frame].count {
                 if (confidences[frame][i][1] > confidences[frame][i][0]){
                     var cord = coordinates[frame][i]
@@ -596,7 +596,58 @@ struct ContentView: View {
         pathAnimation.values = paths
         pathAnimation.keyTimes = keyTimes as [NSNumber]
         pathAnimation.beginTime = AVCoreAnimationBeginTimeAtZero
-        pathAnimation.duration = timeStamps.last! + timeStamps[1]
+        pathAnimation.duration = timeStamps.last!
+        pathAnimation.calculationMode = .discrete
+        
+        shapeLayer.add(pathAnimation, forKey: "path")
+        
+        //shapeLayer.path = paths[0]
+        shapeLayer.strokeColor = UIColor.red.cgColor
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.lineWidth = 3;
+        
+        layer.addSublayer(shapeLayer)
+    }
+    
+    private func addDetectionDots(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
+        
+        let pathAnimation = CAKeyframeAnimation(keyPath: "path")
+        var paths = [CGPath]()
+        var keyTimes = [Double]()
+        var pixelPoints = [CGPoint]()
+        
+        for frame in 0..<coordinates.count{
+            var path = CGMutablePath()
+            for i in 0..<coordinates[frame].count {
+                if (confidences[frame][i][1] > confidences[frame][i][0]){
+                    var cord = coordinates[frame][i]
+                    /*
+                    var box = CGRect(x: Double(cord[0]), y: 1 - Double(cord[1]), width: Double(cord[2]), height: Double(cord[3]))
+                    
+                    let rectPath = CGPath(rect: LocalToShiftedPixelRect(local: box, videoSize: videoSize), transform: nil)
+                    path.addPath(rectPath)
+                     */
+                    var point = CGPoint(x: Double(cord[0]), y: 1 - Double(cord[1]))
+                    var pixelPoint = LocalToPixel(local: point, videoSize: videoSize)
+                    pixelPoints.append(pixelPoint)
+                }
+            }
+            
+            for j in 0..<pixelPoints.count{
+                path.addRect(CGRect(x: pixelPoints[j].x - 2, y: pixelPoints[j].y - 2, width: 4, height: 4))
+            }
+            
+            paths.append(path)
+            keyTimes.append(timeStamps[frame]/timeStamps.last!)
+        }
+        
+        pathAnimation.values = paths
+        pathAnimation.keyTimes = keyTimes as [NSNumber]
+        pathAnimation.beginTime = AVCoreAnimationBeginTimeAtZero
+        pathAnimation.duration = timeStamps.last!
+        pathAnimation.calculationMode = .discrete
         
         shapeLayer.add(pathAnimation, forKey: "path")
         
