@@ -13,6 +13,7 @@
 		826E34622AF3341E002CAAE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826E34612AF3341E002CAAE7 /* Preview Assets.xcassets */; };
 		826E346B2AF68AD9002CAAE7 /* golfTracerModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */; };
 		827E02672B0713C400B6E137 /* TrackSS in Frameworks */ = {isa = PBXBuildFile; productRef = 827E02662B0713C400B6E137 /* TrackSS */; };
+		82A777392B0E7C5700E09EAB /* VectorMath in Frameworks */ = {isa = PBXBuildFile; productRef = 82A777382B0E7C5700E09EAB /* VectorMath */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				827E02672B0713C400B6E137 /* TrackSS in Frameworks */,
+				82A777392B0E7C5700E09EAB /* VectorMath in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +92,7 @@
 			name = GolfTracer;
 			packageProductDependencies = (
 				827E02662B0713C400B6E137 /* TrackSS */,
+				82A777382B0E7C5700E09EAB /* VectorMath */,
 			);
 			productName = GolfTracer;
 			productReference = 826E34572AF3341C002CAAE7 /* GolfTracer.app */;
@@ -121,6 +124,7 @@
 			mainGroup = 826E344E2AF3341C002CAAE7;
 			packageReferences = (
 				827E02652B0713C400B6E137 /* XCRemoteSwiftPackageReference "TrackSS" */,
+				82A777372B0E7C5700E09EAB /* XCRemoteSwiftPackageReference "VectorMath" */,
 			);
 			productRefGroup = 826E34582AF3341C002CAAE7 /* Products */;
 			projectDirPath = "";
@@ -366,6 +370,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		82A777372B0E7C5700E09EAB /* XCRemoteSwiftPackageReference "VectorMath" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nicklockwood/VectorMath.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -373,6 +385,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 827E02652B0713C400B6E137 /* XCRemoteSwiftPackageReference "TrackSS" */;
 			productName = TrackSS;
+		};
+		82A777382B0E7C5700E09EAB /* VectorMath */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82A777372B0E7C5700E09EAB /* XCRemoteSwiftPackageReference "VectorMath" */;
+			productName = VectorMath;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

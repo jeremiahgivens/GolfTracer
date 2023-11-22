@@ -26,6 +26,15 @@
         "revision" : "a410d7ff379e859d1afe2d2820b0d63dd4bcaeda",
         "version" : "1.0.0"
       }
+    },
+    {
+      "identity" : "vectormath",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/VectorMath.git",
+      "state" : {
+        "revision" : "2de2585f455dc8e15d642ca51b29b1917e68fd1e",
+        "version" : "0.4.1"
+      }
     }
   ],
   "version" : 2

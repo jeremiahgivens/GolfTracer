@@ -13,7 +13,7 @@ import CoreImage
 import CoreGraphics
 import Foundation
 import CoreML
-import TrackSS
+import VectorMath
 
 struct Movie: Transferable {
     let url: URL
@@ -323,6 +323,7 @@ struct ContentView: View {
           width: videoSize.width - 40,
           height: videoSize.height - 40)
         
+        addBoundingBox(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         addDetectionDots(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
@@ -387,50 +388,6 @@ struct ContentView: View {
       return instruction
     }
     
-    private func addConfetti(to layer: CALayer) {
-      let images: [UIImage] = (0...5).map { UIImage(named: "confetti\($0)")! }
-      let colors: [UIColor] = [.systemGreen, .systemRed, .systemBlue, .systemPink, .systemOrange, .systemPurple, .systemYellow]
-      let cells: [CAEmitterCell] = (0...16).map { _ in
-        let cell = CAEmitterCell()
-        cell.contents = images.randomElement()?.cgImage
-        cell.birthRate = 3
-        cell.lifetime = 12
-        cell.lifetimeRange = 0
-        cell.velocity = CGFloat.random(in: 100...200)
-        cell.velocityRange = 0
-        cell.emissionLongitude = 0
-        cell.emissionRange = 0.8
-        cell.spin = 4
-        cell.color = colors.randomElement()?.cgColor
-        cell.scale = CGFloat.random(in: 0.2...0.8)
-        return cell
-      }
-      
-      let emitter = CAEmitterLayer()
-      emitter.emitterPosition = CGPoint(x: layer.frame.size.width / 2, y: layer.frame.size.height + 5)
-      emitter.emitterShape = .line
-      emitter.emitterSize = CGSize(width: layer.frame.size.width, height: 2)
-      emitter.emitterCells = cells
-      
-      layer.addSublayer(emitter)
-    }
-    
-    private func addImage(to layer: CALayer, videoSize: CGSize) {
-      let image = UIImage(named: "overlay")!
-      let imageLayer = CALayer()
-        let aspect: CGFloat = image.size.width / image.size.height
-        let width = videoSize.width
-        let height = width / aspect
-        imageLayer.frame = CGRect(
-          x: 0,
-          y: -height * 0.15,
-          width: width,
-          height: height)
-        imageLayer.contents = image.cgImage
-        layer.addSublayer(imageLayer)
-    }
-
-    
     private func orientation(from transform: CGAffineTransform) -> (orientation: UIImage.Orientation, isPortrait: Bool) {
       var assetOrientation = UIImage.Orientation.up
       var isPortrait = false
@@ -449,44 +406,6 @@ struct ContentView: View {
       return (assetOrientation, isPortrait)
     }
     
-    private func add(text: String, to layer: CALayer, videoSize: CGSize) {
-      let attributedText = NSAttributedString(
-        string: text,
-        attributes: [
-          .font: UIFont(name: "ArialRoundedMTBold", size: 60) as Any,
-          .foregroundColor: UIColor(named: "rw-green")!,
-          .strokeColor: UIColor.white,
-          .strokeWidth: -3])
-      
-      let textLayer = CATextLayer()
-      textLayer.string = attributedText
-      textLayer.shouldRasterize = true
-      textLayer.rasterizationScale = UIScreen.main.scale
-      textLayer.backgroundColor = UIColor.clear.cgColor
-      textLayer.alignmentMode = .center
-      
-      textLayer.frame = CGRect(
-        x: 0,
-        y: videoSize.height * 0.66,
-        width: videoSize.width,
-        height: 150)
-      textLayer.displayIfNeeded()
-      
-      let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
-      scaleAnimation.fromValue = 0.8
-      scaleAnimation.toValue = 1.2
-      scaleAnimation.duration = 0.5
-      scaleAnimation.repeatCount = .greatestFiniteMagnitude
-      scaleAnimation.autoreverses = true
-      scaleAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-      
-      scaleAnimation.beginTime = AVCoreAnimationBeginTimeAtZero
-      scaleAnimation.isRemovedOnCompletion = false
-      textLayer.add(scaleAnimation, forKey: "scale")
-      
-      layer.addSublayer(textLayer)
-    }
-    
     private func addTrace(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
         let shapeLayer = CAShapeLayer()
         shapeLayer.frame = CGRect(origin: .zero, size: videoSize)
@@ -494,60 +413,46 @@ struct ContentView: View {
         let pathAnimation = CAKeyframeAnimation(keyPath: "path")
         var paths = [CGPath]()
         var keyTimes = [Double]()
-        var tracks: [Int: [[Double]]] = [:]
         
-        let T = TrackerSS()
+        var traces = [[[Float]]]()
+        var lastClub = [Float]()
+
         for frame in 0..<coordinates.count{
-            var inputs = [[Double]]()
+            var clubs = [[Float]]()
+            var heads = [[Float]]()
+            
             // Find all of the club heads in this frame
             for i in 0..<coordinates[frame].count {
                 if (confidences[frame][i][1] > confidences[frame][i][0]){
-                    var cord = coordinates[frame][i]
-                    
-                    var detection = [Double]()
-                    // format is [x1, y1, x2, y2] (bottom left - top right)
-                    detection.append(Double(cord[0] - cord[2]/2))
-                    detection.append(Double(cord[1] - cord[3]/2))
-                    detection.append(Double(cord[0] + cord[2]/2))
-                    detection.append(Double(cord[1] + cord[3]/2))
-                    
-                    inputs.append(detection)
+                    heads.append(coordinates[frame][i])
+                } else {
+                    clubs.append(coordinates[frame][i])
                 }
             }
             
-            // Associate these detections with the previously tracked detections
-            var output = T.update(dets: inputs)
-            
-            for j in 0..<output.count{
-                var trackID = Int(output[j][4])
-                if (!tracks.keys.contains(trackID)){
-                    tracks[trackID] = [[Double]]()
+            if (frame == 0){
+                var minDist : Float = 0
+                var index : Int = -1
+                // Find the club that is closest to the center (we will assume that the club is detected in the first frame)
+                for i in 0..<clubs.count{
+                    var v = Vector2(clubs[i][0] - 0.5, clubs[i][1] - 0.5)
+                    var distFromCenter = v.length
+                    if (i == 0 || distFromCenter < minDist){
+                        minDist = distFromCenter
+                        index = i
+                    }
                 }
-                tracks[trackID]!.append(output[j])
+                
+                if (index != 0){
+                    lastClub = clubs[index]
+                }
+            } else {
+                // Find the club that has the biggest IOU with lastClub, and assign this to last club.
             }
+            
+            // now, find the club head that falls within the bounding box of lastClub. If there are multiple, choose the one closes to a corner.
             
             var path = CGMutablePath()
-            
-            // Now for this frame, draw a subpath for every track so far:
-            for key in tracks.keys{
-                var subPath = CGMutablePath()
-                for j in 0..<tracks[key]!.count{
-                    var box = tracks[key]![j]
-                    var point = CGPoint(x: (box[0] + box[2])/2, y: 1 - (box[1] + box[3])/2)
-                    var pixelPoint = LocalToPixel(local: point, videoSize: videoSize)
-                    /*
-                    if (j == 0){
-                        subPath.move(to: pixelPoint)
-                    } else {
-                        subPath.addLine(to: pixelPoint)
-                    }
-                     */
-                    
-                    subPath.addRect(CGRect(x: pixelPoint.x - 2, y: pixelPoint.y - 2, width: 4, height: 4))
-                }
-                path.addPath(subPath)
-            }
-            
             
             paths.append(path)
             keyTimes.append(timeStamps[frame]/timeStamps.last!)
@@ -580,7 +485,7 @@ struct ContentView: View {
         for frame in 0..<coordinates.count{
             var path = CGMutablePath()
             for i in 0..<coordinates[frame].count {
-                if (confidences[frame][i][1] > confidences[frame][i][0]){
+                if (confidences[frame][i][1] > confidences[frame][i][0] || true){
                     var cord = coordinates[frame][i]
                     var box = CGRect(x: Double(cord[0]), y: 1 - Double(cord[1]), width: Double(cord[2]), height: Double(cord[3]))
                     
