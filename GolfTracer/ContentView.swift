@@ -324,7 +324,8 @@ struct ContentView: View {
           height: videoSize.height - 40)
         
         addBoundingBox(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
-        addDetectionDots(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
+        //addDetectionDots(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
+        addTrace(to: overlayLayer, videoSize: videoSize, coordinates: coordinates, confidences: confidences, timeStamps: timeStamps)
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
@@ -414,7 +415,7 @@ struct ContentView: View {
         var paths = [CGPath]()
         var keyTimes = [Double]()
         
-        var traces = [[[Float]]]()
+        var trace = [CGPoint]()
         var lastClub = [Float]()
 
         for frame in 0..<coordinates.count{
@@ -431,7 +432,7 @@ struct ContentView: View {
             }
             
             if (frame == 0){
-                var minDist : Float = 0
+                var minDist : Float = 10
                 var index : Int = -1
                 // Find the club that is closest to the center (we will assume that the club is detected in the first frame)
                 for i in 0..<clubs.count{
@@ -443,16 +444,61 @@ struct ContentView: View {
                     }
                 }
                 
-                if (index != 0){
+                if (index != -1){
                     lastClub = clubs[index]
                 }
             } else {
                 // Find the club that has the biggest IOU with lastClub, and assign this to last club.
+                var tempBox = [Float]()
+                var maxIOU : Float = 0
+                for i in 0..<clubs.count{
+                    var IOU = IntersectionOverUnion(A: lastClub, B: clubs[i])
+                    if IOU > maxIOU {
+                        maxIOU = IOU
+                        tempBox = clubs[i]
+                    }
+                }
+                
+                if !tempBox.isEmpty{
+                    lastClub = tempBox
+                }
             }
             
             // now, find the club head that falls within the bounding box of lastClub. If there are multiple, choose the one closes to a corner.
+            var canidateHeads = [[Float]]()
+            for i in 0..<heads.count{
+                var head = heads[i]
+                var area = AreaOfIntersection(A: head, B: lastClub)
+                if (area > 0){
+                    canidateHeads.append(head)
+                }
+            }
+            
+            if (!canidateHeads.isEmpty){
+                var head = [Float]()
+                var maxDistFromCenter : Float = 0
+                
+                for i in 0..<canidateHeads.count{
+                    var v = Vector2(canidateHeads[i][0] - lastClub[0], canidateHeads[i][1] - lastClub[1])
+                    var distFromCenter = v.length
+                    if (i == 0 || distFromCenter > maxDistFromCenter){
+                        maxDistFromCenter = distFromCenter
+                        head = canidateHeads[i]
+                    }
+                }
+                
+                trace.append(LocalToPixel(local: CGPoint(x: Double(head[0]), y: 1 - Double(head[1])), videoSize: videoSize))
+            }
             
             var path = CGMutablePath()
+            
+            for i in 0..<trace.count {
+                if i == 0 {
+                    path.move(to: trace[0])
+                } else {
+                    path.addLine(to: trace[i])
+                }
+            }
             
             paths.append(path)
             keyTimes.append(timeStamps[frame]/timeStamps.last!)
@@ -584,6 +630,37 @@ struct ContentView: View {
     
     private func LocalToShiftedPixelRect(local: CGRect, videoSize: CGSize) -> CGRect{
         return LocalRectToPixelRect(local: ShiftForRectangleCenter(local: local), videoSize: videoSize)
+    }
+    
+    private func AreaOfIntersection (A: [Float], B: [Float]) -> Float{
+        let XA1 = A[0] - A[2]/2
+        let XA2 = A[0] + A[2]/2
+        let YA1 = A[1] - A[3]/2
+        let YA2 = A[1] + A[3]/2
+        
+        let XB1 = B[0] - B[2]/2
+        let XB2 = B[0] + B[2]/2
+        let YB1 = B[1] - B[3]/2
+        let YB2 = B[1] + B[3]/2
+        
+        var w : Float = max(0, min(XA2, XB2) - max(XA1, XB1))
+        var h : Float = max(0, min(YA2, YB2) - max(YA1, YB1))
+        
+        var area : Float = w * h
+        
+        return area
+    }
+    
+    private func Area(_ A: [Float]) -> Float{
+        return A[2]*A[3]
+    }
+    
+    private func AreaOfUnion (A: [Float], B: [Float]) -> Float{
+        return Area(A) + Area(B) - AreaOfIntersection(A: A, B: B)
+    }
+    
+    private func IntersectionOverUnion (A: [Float], B: [Float]) -> Float{
+        return AreaOfIntersection(A: A, B: B)/AreaOfUnion(A: A, B: B)
     }
 }
 
