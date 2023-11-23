@@ -14,6 +14,7 @@
 		826E346B2AF68AD9002CAAE7 /* golfTracerModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */; };
 		827E02672B0713C400B6E137 /* TrackSS in Frameworks */ = {isa = PBXBuildFile; productRef = 827E02662B0713C400B6E137 /* TrackSS */; };
 		82A777392B0E7C5700E09EAB /* VectorMath in Frameworks */ = {isa = PBXBuildFile; productRef = 82A777382B0E7C5700E09EAB /* VectorMath */; };
+		82A7773D2B0FA64800E09EAB /* GolfTracerModel2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 82A7773C2B0FA64800E09EAB /* GolfTracerModel2.mlpackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		826E345E2AF3341E002CAAE7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		826E34612AF3341E002CAAE7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = golfTracerModel.mlpackage; sourceTree = "<group>"; };
+		82A7773C2B0FA64800E09EAB /* GolfTracerModel2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = GolfTracerModel2.mlpackage; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				826E345C2AF3341C002CAAE7 /* ContentView.swift */,
 				826E345E2AF3341E002CAAE7 /* Assets.xcassets */,
 				826E346A2AF68AD9002CAAE7 /* golfTracerModel.mlpackage */,
+				82A7773C2B0FA64800E09EAB /* GolfTracerModel2.mlpackage */,
 				826E34602AF3341E002CAAE7 /* Preview Content */,
 			);
 			path = GolfTracer;
@@ -154,6 +157,7 @@
 			files = (
 				826E345D2AF3341C002CAAE7 /* ContentView.swift in Sources */,
 				826E345B2AF3341C002CAAE7 /* GolfTracerApp.swift in Sources */,
+				82A7773D2B0FA64800E09EAB /* GolfTracerModel2.mlpackage in Sources */,
 				826E346B2AF68AD9002CAAE7 /* golfTracerModel.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

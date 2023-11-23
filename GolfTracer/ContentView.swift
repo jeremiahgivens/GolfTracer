@@ -214,7 +214,7 @@ struct ContentView: View {
             let videoInfo = orientation(from: videoTrack[0].preferredTransform)
             
             do {
-                let model = try golfTracerModel()
+                let model = try GolfTracerModel2()
                 
                 while let sampleBuffer = trackReaderOutput.copyNextSampleBuffer() {
                     print("sample at time \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
@@ -223,7 +223,7 @@ struct ContentView: View {
                         try autoreleasepool {
                             guard let resized = resizePixelBuffer(imageBuffer, imageOrientation: videoInfo.orientation) else { return }
                             
-                            let input = golfTracerModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
+                            let input = GolfTracerModel2Input(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
                             let preds = try model.prediction(input: input)
 
                             if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
@@ -416,6 +416,8 @@ struct ContentView: View {
         var keyTimes = [Double]()
         
         var trace = [CGPoint]()
+        var traceHeads = [[Float]]()
+        var traceTimeStamps = [Double]()
         var lastClub = [Float]()
 
         for frame in 0..<coordinates.count{
@@ -464,11 +466,13 @@ struct ContentView: View {
                 }
             }
             
-            // now, find the club head that falls within the bounding box of lastClub. If there are multiple, choose the one closes to a corner.
+            let path = CGMutablePath()
+            
+            // now, find the club head that falls within the bounding box of lastClub.
             var canidateHeads = [[Float]]()
             for i in 0..<heads.count{
                 var head = heads[i]
-                var area = AreaOfIntersection(A: head, B: lastClub)
+                let area = AreaOfIntersection(A: head, B: lastClub)
                 if (area > 0){
                     canidateHeads.append(head)
                 }
@@ -476,27 +480,71 @@ struct ContentView: View {
             
             if (!canidateHeads.isEmpty){
                 var head = [Float]()
-                var maxDistFromCenter : Float = 0
                 
-                for i in 0..<canidateHeads.count{
-                    var v = Vector2(canidateHeads[i][0] - lastClub[0], canidateHeads[i][1] - lastClub[1])
-                    var distFromCenter = v.length
-                    if (i == 0 || distFromCenter > maxDistFromCenter){
-                        maxDistFromCenter = distFromCenter
-                        head = canidateHeads[i]
+                // If this is the the first detection, we will grab the point that is farthest from the center of the clubs bounding box
+                if traceHeads.isEmpty {
+                    var maxDistFromCenter : Float = 0
+                    for i in 0..<canidateHeads.count{
+                        var v = Vector2(canidateHeads[i][0] - lastClub[0], canidateHeads[i][1] - lastClub[1])
+                        var distFromCenter = v.length
+                        if (i == 0 || distFromCenter > maxDistFromCenter){
+                            maxDistFromCenter = distFromCenter
+                            head = canidateHeads[i]
+                        }
+                    }
+                } else if traceHeads.count == 1 {
+                    // Choose head that is closest to previously detected head.
+                    var minDistFromLast : Float = 0
+                    for i in 0..<canidateHeads.count{
+                        var v = Vector2(canidateHeads[i][0] - traceHeads.last![0], canidateHeads[i][1] - traceHeads.last![1])
+                        var dist = v.length
+                        if (i == 0 || dist < minDistFromLast){
+                            minDistFromLast = dist
+                            head = canidateHeads[i]
+                        }
+                    }
+                } else {
+                    // Perform extrapolation and choose the point closest to our predicted point. We will use the last two detections and lagrange polynomials to predict the next point
+                    var steps = 2
+                    if traceHeads.count > 2 {
+                        steps = 3
+                    }
+                    var points = Array(traceHeads[traceHeads.count - steps ... traceHeads.count - 1])
+                    var times = Array(traceTimeStamps[traceTimeStamps.count - steps ... traceTimeStamps.count - 1])
+                    var prediction = ExtrapolatedBox(points: points, times: times, predictionTime: timeStamps[frame])
+                    
+                    var minDistFromPrediction : Float = 0
+                    for i in 0..<canidateHeads.count{
+                        var v = Vector2(canidateHeads[i][0] - prediction[0], canidateHeads[i][1] - prediction[1])
+                        var dist = v.length
+                        if (i == 0 || dist < minDistFromPrediction){
+                            minDistFromPrediction = dist
+                            head = canidateHeads[i]
+                        }
                     }
                 }
                 
+                traceTimeStamps.append(timeStamps[frame])
+                traceHeads.append(head)
                 trace.append(LocalToPixel(local: CGPoint(x: Double(head[0]), y: 1 - Double(head[1])), videoSize: videoSize))
             }
             
-            var path = CGMutablePath()
+            if !trace.isEmpty {
+                path.move(to: trace[0])
+            }
             
             for i in 0..<trace.count {
+                // We will use the methods described here:
+                // https://math.stackexchange.com/questions/1075521/find-cubic-bézier-control-points-given-four-points
+                
+                // first we convert our points to vectors:
+                var p0 : Vector2
+                var p1 : Vector2
+                var p2 : Vector2
+                var p3 : Vector3
+                
                 if i == 0 {
-                    path.move(to: trace[0])
-                } else {
-                    path.addLine(to: trace[i])
+                    
                 }
             }
             
@@ -518,6 +566,38 @@ struct ContentView: View {
         shapeLayer.lineWidth = 3;
         
         layer.addSublayer(shapeLayer)
+    }
+    
+    private func ExtrapolatedBox(points: [[Float]], times: [Double], predictionTime: Double) -> [Float] {
+        // https://en.wikipedia.org/wiki/Lagrange_polynomial
+        // Points is expected to have two or three elements
+        var prediction = [Float]()
+        var basis = [Double]()
+        
+        // Construct the basis
+        for i in 0..<points.count {
+            basis.append(1)
+            for j in 0..<points.count{
+                if (j != i){
+                    basis[i] *= (predictionTime - times[j])/(times[i] - times[j])
+                }
+            }
+        }
+        
+        // Now we compute our predicted point
+        for i in 0...1{
+            prediction.append(0)
+            for j in 0..<points.count {
+                prediction[i] += points[j][i]*Float(basis[j])
+            }
+        }
+        
+        // And we will assume (for now) that the box dimensions stays the same
+        for i in 2...3 {
+            prediction.append(points.last![i])
+        }
+        
+        return prediction
     }
     
     private func addBoundingBox(to layer: CALayer, videoSize: CGSize, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]){
