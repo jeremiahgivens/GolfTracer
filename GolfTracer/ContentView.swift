@@ -533,19 +533,40 @@ struct ContentView: View {
                 path.move(to: trace[0])
             }
             
-            for i in 0..<trace.count {
+            for i in 0..<trace.count - 1 {
                 // We will use the methods described here:
                 // https://math.stackexchange.com/questions/1075521/find-cubic-bézier-control-points-given-four-points
                 
                 // first we convert our points to vectors:
-                var p0 : Vector2
+                var m0 : Vector2
+                var m1 : Vector2 = Vector2(trace[i])
+                var m2 : Vector2 = Vector2(trace[i+1])
+                var m3 : Vector2
+                
+                if (i == 0){
+                    m0 = ScalarMultiply(scalar: 2, vector: m1) - m2
+                } else {
+                    m0 = Vector2(trace[i - 1])
+                }
+                
+                if (i == trace.count - 2){
+                    m3 = ScalarMultiply(scalar: 2, vector: m2) - m1
+                } else {
+                    m3 = Vector2(trace[i + 2])
+                }
+                
+                var p0 : Vector2 = m1
                 var p1 : Vector2
                 var p2 : Vector2
-                var p3 : Vector3
+                var p3 : Vector2 = m2
                 
-                if i == 0 {
-                    
-                }
+                var v1 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m2 - m0)
+                var v2 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m3 - m1)
+                
+                p1 = p0 + ScalarMultiply(scalar: 1/3, vector: v1)
+                p2 = p3 - ScalarMultiply(scalar: 1/3, vector: v2)
+                
+                path.addCurve(to: trace[i + 1], control1: Vector2ToCGPoint(v: p1), control2: Vector2ToCGPoint(v: p2))
             }
             
             paths.append(path)
@@ -566,6 +587,16 @@ struct ContentView: View {
         shapeLayer.lineWidth = 3;
         
         layer.addSublayer(shapeLayer)
+    }
+    
+    private func ScalarMultiply(scalar: Float, vector: Vector2) -> Vector2{
+        var scaledVector = Vector2(scalar*vector.x, scalar*vector.y)
+        
+        return scaledVector
+    }
+    
+    private func Vector2ToCGPoint(v: Vector2) -> CGPoint {
+        return CGPoint(x: Int(v.x), y: Int(v.y))
     }
     
     private func ExtrapolatedBox(points: [[Float]], times: [Double], predictionTime: Double) -> [Float] {
