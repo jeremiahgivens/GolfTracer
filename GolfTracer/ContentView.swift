@@ -223,7 +223,7 @@ struct ContentView: View {
                         try autoreleasepool {
                             guard let resized = resizePixelBuffer(imageBuffer, imageOrientation: videoInfo.orientation) else { return }
                             
-                            let input = GolfTracerModel2Input(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.25)
+                            let input = GolfTracerModel2Input(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.05)
                             let preds = try model.prediction(input: input)
 
                             if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
@@ -534,39 +534,48 @@ struct ContentView: View {
             }
             
             for i in 0..<trace.count - 1 {
-                // We will use the methods described here:
-                // https://math.stackexchange.com/questions/1075521/find-cubic-bézier-control-points-given-four-points
+                let prev = Vector2(trace[i])
+                let cur = Vector2(trace[i+1])
+                let dif = prev - cur
                 
-                // first we convert our points to vectors:
-                var m0 : Vector2
-                var m1 : Vector2 = Vector2(trace[i])
-                var m2 : Vector2 = Vector2(trace[i+1])
-                var m3 : Vector2
-                
-                if (i == 0){
-                    m0 = ScalarMultiply(scalar: 2, vector: m1) - m2
+                if (dif.length > 5){
+                    // We will use the methods described here to smooth out the line:
+                    // https://math.stackexchange.com/questions/1075521/find-cubic-bézier-control-points-given-four-points
+                    
+                    // first we convert our points to vectors:
+                    var m0 : Vector2
+                    var m1 : Vector2 = Vector2(trace[i])
+                    var m2 : Vector2 = Vector2(trace[i+1])
+                    var m3 : Vector2
+                    
+                    if (i == 0){
+                        m0 = ScalarMultiply(scalar: 2, vector: m1) - m2
+                    } else {
+                        m0 = Vector2(trace[i - 1])
+                    }
+                    
+                    if (i == trace.count - 2){
+                        m3 = ScalarMultiply(scalar: 2, vector: m2) - m1
+                    } else {
+                        m3 = Vector2(trace[i + 2])
+                    }
+                    
+                    var p0 : Vector2 = m1
+                    var p1 : Vector2
+                    var p2 : Vector2
+                    var p3 : Vector2 = m2
+                    
+                    var v1 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m2 - m0)
+                    var v2 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m3 - m1)
+                    
+                    p1 = p0 + ScalarMultiply(scalar: 1/3, vector: v1)
+                    p2 = p3 - ScalarMultiply(scalar: 1/3, vector: v2)
+                    
+                    path.addCurve(to: trace[i + 1], control1: Vector2ToCGPoint(v: p1), control2: Vector2ToCGPoint(v: p2))
                 } else {
-                    m0 = Vector2(trace[i - 1])
+                    path.addLine(to: trace[i + 1])
                 }
                 
-                if (i == trace.count - 2){
-                    m3 = ScalarMultiply(scalar: 2, vector: m2) - m1
-                } else {
-                    m3 = Vector2(trace[i + 2])
-                }
-                
-                var p0 : Vector2 = m1
-                var p1 : Vector2
-                var p2 : Vector2
-                var p3 : Vector2 = m2
-                
-                var v1 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m2 - m0)
-                var v2 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m3 - m1)
-                
-                p1 = p0 + ScalarMultiply(scalar: 1/3, vector: v1)
-                p2 = p3 - ScalarMultiply(scalar: 1/3, vector: v2)
-                
-                path.addCurve(to: trace[i + 1], control1: Vector2ToCGPoint(v: p1), control2: Vector2ToCGPoint(v: p2))
             }
             
             paths.append(path)
