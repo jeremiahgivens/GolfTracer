@@ -419,8 +419,12 @@ struct ContentView: View {
         var traceHeads = [[Float]]()
         var traceTimeStamps = [Double]()
         var lastClub = [Float]()
+        
+        var clubDetected = false
+        var lastQuadrant = 2
 
         for frame in 0..<coordinates.count{
+            clubDetected = false
             var clubs = [[Float]]()
             var heads = [[Float]]()
             
@@ -448,6 +452,7 @@ struct ContentView: View {
                 
                 if (index != -1){
                     lastClub = clubs[index]
+                    clubDetected = true
                 }
             } else {
                 // Find the club that has the biggest IOU with lastClub, and assign this to last club.
@@ -463,6 +468,7 @@ struct ContentView: View {
                 
                 if !tempBox.isEmpty{
                     lastClub = tempBox
+                    clubDetected = true
                 }
             }
             
@@ -524,9 +530,56 @@ struct ContentView: View {
                     }
                 }
                 
+                if (head[0] > lastClub[0] && head[1] > lastClub[1]){
+                    lastQuadrant = 0
+                } else if (head[0] < lastClub[0] && head[1] > lastClub[1]){
+                    lastQuadrant = 1
+                } else if (head[0] < lastClub[0] && head[1] < lastClub[1]){
+                    lastQuadrant = 2
+                } else if (head[0] > lastClub[0] && head[1] < lastClub[1]){
+                    lastQuadrant = 3
+                }
+                
                 traceTimeStamps.append(timeStamps[frame])
                 traceHeads.append(head)
                 trace.append(LocalToPixel(local: CGPoint(x: Double(head[0]), y: 1 - Double(head[1])), videoSize: videoSize))
+            } else if (trace.count > 0 && clubDetected) {
+                // We will place a box the same size as the previous one in the same quadrant of the club box
+                var oldBox = traceHeads.last!
+                var newBox = [Float]()
+                
+                switch lastQuadrant {
+                case 0: do {
+                    newBox.append(lastClub[0] + 0.5*(lastClub[2] - oldBox[2]))
+                    newBox.append(lastClub[1] + 0.5*(lastClub[3] - oldBox[3]))
+                    newBox.append(oldBox[2])
+                    newBox.append(oldBox[3])
+                } case 1: do {
+                    newBox.append(lastClub[0] - 0.5*(lastClub[2] - oldBox[2]))
+                    newBox.append(lastClub[1] + 0.5*(lastClub[3] - oldBox[3]))
+                    newBox.append(oldBox[2])
+                    newBox.append(oldBox[3])
+                } case 2: do {
+                    newBox.append(lastClub[0] - 0.5*(lastClub[2] - oldBox[2]))
+                    newBox.append(lastClub[1] - 0.5*(lastClub[3] - oldBox[3]))
+                    newBox.append(oldBox[2])
+                    newBox.append(oldBox[3])
+                } case 3: do {
+                    newBox.append(lastClub[0] + 0.5*(lastClub[2] - oldBox[2]))
+                    newBox.append(lastClub[1] - 0.5*(lastClub[3] - oldBox[3]))
+                    newBox.append(oldBox[2])
+                    newBox.append(oldBox[3])
+                }
+                default:
+                    print("Incorrect quadrant number")
+                }
+                
+                if !newBox.isEmpty {
+                    var head = newBox
+                    traceTimeStamps.append(timeStamps[frame])
+                    traceHeads.append(head)
+                    trace.append(LocalToPixel(local: CGPoint(x: Double(head[0]), y: 1 - Double(head[1])), videoSize: videoSize))
+                }
             }
             
             if !trace.isEmpty {

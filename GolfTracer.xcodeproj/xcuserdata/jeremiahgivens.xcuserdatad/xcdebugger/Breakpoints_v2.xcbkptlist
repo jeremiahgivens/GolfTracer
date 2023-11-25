@@ -364,8 +364,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "651"
-            endingLineNumber = "651"
+            startingLineNumber = "704"
+            endingLineNumber = "704"
             landmarkName = "addBoundingBox(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
             <Locations>
@@ -428,8 +428,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "746"
-            endingLineNumber = "746"
+            startingLineNumber = "799"
+            endingLineNumber = "799"
             landmarkName = "ShiftForRectangleCenter(local:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -444,8 +444,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "669"
-            endingLineNumber = "669"
+            startingLineNumber = "722"
+            endingLineNumber = "722"
             landmarkName = "addBoundingBox(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -460,8 +460,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "663"
-            endingLineNumber = "663"
+            startingLineNumber = "716"
+            endingLineNumber = "716"
             landmarkName = "addBoundingBox(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
             <Locations>
@@ -523,8 +523,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "667"
-            endingLineNumber = "667"
+            startingLineNumber = "720"
+            endingLineNumber = "720"
             landmarkName = "addBoundingBox(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -539,8 +539,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "436"
-            endingLineNumber = "436"
+            startingLineNumber = "440"
+            endingLineNumber = "440"
             landmarkName = "addTrace(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -555,8 +555,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "437"
-            endingLineNumber = "437"
+            startingLineNumber = "441"
+            endingLineNumber = "441"
             landmarkName = "addTrace(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -571,8 +571,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "443"
-            endingLineNumber = "443"
+            startingLineNumber = "447"
+            endingLineNumber = "447"
             landmarkName = "addTrace(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -587,8 +587,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "449"
-            endingLineNumber = "449"
+            startingLineNumber = "453"
+            endingLineNumber = "453"
             landmarkName = "addTrace(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
             <Locations>
@@ -635,8 +635,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "481"
-            endingLineNumber = "481"
+            startingLineNumber = "487"
+            endingLineNumber = "487"
             landmarkName = "addTrace(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
             <Locations>
@@ -683,8 +683,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "769"
-            endingLineNumber = "769"
+            startingLineNumber = "822"
+            endingLineNumber = "822"
             landmarkName = "AreaOfIntersection(A:B:)"
             landmarkType = "7">
             <Locations>
@@ -731,8 +731,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "475"
-            endingLineNumber = "475"
+            startingLineNumber = "481"
+            endingLineNumber = "481"
             landmarkName = "addTrace(to:videoSize:coordinates:confidences:timeStamps:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -747,8 +747,8 @@
             filePath = "GolfTracer/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "640"
-            endingLineNumber = "640"
+            startingLineNumber = "693"
+            endingLineNumber = "693"
             landmarkName = "ExtrapolatedBox(points:times:predictionTime:)"
             landmarkType = "7">
          </BreakpointContent>
