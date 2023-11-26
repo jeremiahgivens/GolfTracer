@@ -48,11 +48,20 @@ struct ContentView: View {
                     }
                     
                     Section {
-                        NavigationLink("Crop Video") {
-                            Text("View coming soon")
-                        }
-                        NavigationLink("Trace Time Range") {
-                            Text("View coming soon")
+                        switch viewModel.loadState {
+                            case .unknown:
+                                EmptyView()
+                            case .loading:
+                                EmptyView()
+                            case .loaded:
+                                NavigationLink("Crop Video") {
+                                    Text("View coming soon")
+                                }
+                                NavigationLink("Trace Time Range") {
+                                    Text("View coming soon")
+                                }
+                            case .failed:
+                                EmptyView()
                         }
                     }
                     
@@ -99,6 +108,7 @@ struct ContentView: View {
             Task {
                 do {
                     viewModel.loadState = .loading
+                    viewModel.videoAnalysisState = .unknown
 
                     if let loadedMovie = try await viewModel.selectedItem?.loadTransferable(type: Movie.self) {
                         do {
