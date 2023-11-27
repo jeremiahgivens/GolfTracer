@@ -7,13 +7,7 @@
 
 import SwiftUI
 import AVKit
-import AVFoundation
 import PhotosUI
-import CoreImage
-import CoreGraphics
-import Foundation
-import CoreML
-import VectorMath
 
 
 struct ContentView: View {
@@ -94,6 +88,9 @@ struct ContentView: View {
                                     VideoPlayer(player: AVPlayer(url: viewModel.annotatedVideoURL!))
                                         .frame(maxWidth: .infinity)
                                 }
+                            }
+                            Button("Save video to Photos"){
+                                viewModel.ExportVideoToPhotosLibrary()
                             }
                         case .failed:
                             Text("Video analysis failed.")

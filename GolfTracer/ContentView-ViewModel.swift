@@ -112,7 +112,7 @@ extension ContentView {
                 let videoInfo = orientation(from: videoTrack[0].preferredTransform)
                 
                 do {
-                    let model = try GolfTracerModel2()
+                    let model = try GolfTracerClubDetectionModel()
                     
                     while let sampleBuffer = trackReaderOutput.copyNextSampleBuffer() {
                         print("sample at time \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
@@ -121,7 +121,7 @@ extension ContentView {
                             try autoreleasepool {
                                 guard let resized = resizePixelBuffer(imageBuffer, imageOrientation: videoInfo.orientation) else { return }
                                 
-                                let input = GolfTracerModel2Input(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.05)
+                                let input = GolfTracerClubDetectionModelInput(image: resized, iouThreshold: 0.45, confidenceThreshold: 0.05)
                                 let preds = try model.prediction(input: input)
 
                                 if let b = try? UnsafeBufferPointer<Float>(preds.coordinates) {
@@ -266,13 +266,6 @@ extension ContentView {
                 switch export.status {
                 case .completed:
                     // Call your method to display the video
-                    PHPhotoLibrary.shared().performChanges({
-                                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: exportURL)
-                            }) { saved, error in
-                                if saved {
-                                    print("Saved")
-                                }
-                            }
                     self.annotatedVideoURL = exportURL
                     self.videoAnalysisState = .loaded
                     break
@@ -283,6 +276,16 @@ extension ContentView {
                 }
               }
             }
+        }
+        
+        public func ExportVideoToPhotosLibrary(){
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.annotatedVideoURL!)
+                    }) { saved, error in
+                        if saved {
+                            print("Saved")
+                        }
+                    }
         }
         
         private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack) -> AVMutableVideoCompositionLayerInstruction {
