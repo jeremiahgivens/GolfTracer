@@ -166,7 +166,6 @@ extension ContentView {
         }
         
         func AnnotateVideo(assetTrack: AVAssetTrack, asset: AVAsset, coordinates: [[[Float]]], confidences: [[[Float]]], timeStamps: [Double]) {
-            print(coordinates)
             var composition = AVMutableComposition()
             guard
               let compositionTrack = composition.addMutableTrack(
@@ -495,48 +494,7 @@ extension ContentView {
                 }
                 
                 for i in 0..<trace.count - 1 {
-                    let prev = Vector2(trace[i])
-                    let cur = Vector2(trace[i+1])
-                    let dif = prev - cur
-                    
-                    if (dif.length > 5){
-                        // We will use the methods described here to smooth out the line:
-                        // https://math.stackexchange.com/questions/1075521/find-cubic-bézier-control-points-given-four-points
-                        
-                        // first we convert our points to vectors:
-                        var m0 : Vector2
-                        let m1 : Vector2 = Vector2(trace[i])
-                        let m2 : Vector2 = Vector2(trace[i+1])
-                        var m3 : Vector2
-                        
-                        if (i == 0){
-                            m0 = ScalarMultiply(scalar: 2, vector: m1) - m2
-                        } else {
-                            m0 = Vector2(trace[i - 1])
-                        }
-                        
-                        if (i == trace.count - 2){
-                            m3 = ScalarMultiply(scalar: 2, vector: m2) - m1
-                        } else {
-                            m3 = Vector2(trace[i + 2])
-                        }
-                        
-                        let p0 : Vector2 = m1
-                        var p1 : Vector2
-                        var p2 : Vector2
-                        let p3 : Vector2 = m2
-                        
-                        let v1 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m2 - m0)
-                        let v2 : Vector2 = ScalarMultiply(scalar: 1/2, vector: m3 - m1)
-                        
-                        p1 = p0 + ScalarMultiply(scalar: 1/3, vector: v1)
-                        p2 = p3 - ScalarMultiply(scalar: 1/3, vector: v2)
-                        
-                        path.addCurve(to: trace[i + 1], control1: Vector2ToCGPoint(v: p1), control2: Vector2ToCGPoint(v: p2))
-                    } else {
-                        path.addLine(to: trace[i + 1])
-                    }
-                    
+                    path.addLine(to: trace[i + 1])
                 }
                 
                 paths.append(path)
