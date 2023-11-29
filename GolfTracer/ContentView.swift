@@ -11,7 +11,6 @@ import PhotosUI
 
 
 struct ContentView: View {
-    
     @StateObject private var viewModel = ViewModel()
     
     var body: some View {
@@ -49,7 +48,7 @@ struct ContentView: View {
                                 EmptyView()
                             case .loaded:
                                 NavigationLink("Crop Video") {
-                                    Text("View coming soon")
+                                    CroppingView(url: viewModel.originalMovie!.url)
                                 }
                                 NavigationLink("Trace Time Range") {
                                     Text("View coming soon")
