@@ -10,8 +10,8 @@ import AVKit
 
 struct CroppingView: View {
     var url: URL?
-    @State var value: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 50))
-    @State var bounds: ClosedRange<Int> = ClosedRange(uncheckedBounds: (0, 70))
+    @State var value: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
+    @State var bounds: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
     
     var body: some View {
         ZStack {
@@ -23,26 +23,21 @@ struct CroppingView: View {
                         .frame(maxWidth: .infinity)
                 }
                 HStack{
-                    Spacer()
-                    Spacer()
-                    Spacer()
-                    Spacer()
+                    Spacer(minLength: 50)
                     RangedSliderView(viewModel: RangedSliderView.ViewModel(sliderPosition: value, sliderBounds: bounds), sliderPositionChanged: GetSliderRange)
-                    Spacer()
-                    Spacer()
-                    Spacer()
-                    Spacer()
+                    Spacer(minLength: 50)
                 }
-                Spacer()
-                Spacer()
-                Spacer()
-                Spacer()
+                Spacer(minLength: 50)
             }
         }
     }
     
     func GetSliderRange(range: ClosedRange<Float>){
-        
+        print(range)
     }
+}
+
+#Preview {
+    CroppingView(url: Bundle.main.url(forResource: "IMG_6877", withExtension: "MOV")!)
 }
 

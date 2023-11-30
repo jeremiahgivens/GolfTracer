@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct RangedSliderView: View {
-    
-    @StateObject var viewModel: ViewModel
+    @ObservedObject var viewModel: ViewModel
     @State private var isActive: Bool = false
     let sliderPositionChanged: (ClosedRange<Float>) -> Void
 
@@ -18,7 +17,7 @@ struct RangedSliderView: View {
             sliderView(sliderSize: geometry.size,
                        sliderViewYCenter: geometry.size.height / 2)
         }
-        .frame(height: 10)
+        .frame(height: 40)
     }
 
     @ViewBuilder private func sliderView(sliderSize: CGSize, sliderViewYCenter: CGFloat) -> some View {
@@ -59,21 +58,21 @@ struct RangedSliderView: View {
     @ViewBuilder func lineBetweenThumbs(from: CGPoint, to: CGPoint) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 4)
-                .fill(.blue)
-                .frame(height: 4)
+                .fill(.green)
+                .frame(height: 16)
 
             Path { path in
                 path.move(to: from)
                 path.addLine(to: to)
             }
-            .stroke(isActive ? .blue : .red,
-                    lineWidth: 4)
+            .stroke(.blue,
+                    lineWidth: 16)
         }
     }
 
     @ViewBuilder func thumbView(position: CGPoint, value: Float) -> some View {
      Circle()
-        .foregroundColor(isActive ? .green : .pink)
+            .foregroundColor(.red)
         .contentShape(Rectangle())
         .position(x: position.x, y: position.y)
         .animation(.spring(), value: isActive)
@@ -81,17 +80,17 @@ struct RangedSliderView: View {
 }
 
 extension RangedSliderView {
-    final class ViewModel: ObservableObject {
+    @MainActor class ViewModel: ObservableObject {
         @Published var sliderPosition: ClosedRange<Float>
-        let sliderBounds: ClosedRange<Int>
+        let sliderBounds: ClosedRange<Float>
 
-        let sliderBoundDifference: Int
+        let sliderBoundDifference: Float
 
         init(sliderPosition: ClosedRange<Float>,
-             sliderBounds: ClosedRange<Int>) {
+             sliderBounds: ClosedRange<Float>) {
             self.sliderPosition = sliderPosition
             self.sliderBounds = sliderBounds
-            self.sliderBoundDifference = sliderBounds.count - 1
+            self.sliderBoundDifference = sliderBounds.upperBound - sliderBounds.lowerBound
         }
 
         func leftThumbLocation(width: CGFloat, sliderViewYCenter: CGFloat = 0) -> CGPoint {
