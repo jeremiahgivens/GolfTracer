@@ -46,9 +46,9 @@ struct CroppingView: View {
     }
     
     func GetSliderRange(range: ClosedRange<Float>){
-        print(range)
         if (duration != nil){
-            avPlayer?.seek(to: CMTime(seconds: Double(range.lowerBound) * duration!.seconds, preferredTimescale: duration!.timescale))
+            var time = CMTime(seconds: Double(range.lowerBound) * duration!.seconds, preferredTimescale: duration!.timescale)
+            avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
         }
     }
 }
