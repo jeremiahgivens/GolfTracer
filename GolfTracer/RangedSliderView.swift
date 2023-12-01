@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct RangedSliderView: View {
-    @ObservedObject var viewModel: ViewModel
+    @StateObject var viewModel: ViewModel = ViewModel()
     @State private var isActive: Bool = false
-    let sliderPositionChanged: (ClosedRange<Float>) -> Void
+    let sliderPositionChanged: (ClosedRange<Float>, Bool) -> Void
 
     var body: some View {
         GeometryReader { geometry in
@@ -35,7 +35,7 @@ struct RangedSliderView: View {
             
             if newValue < viewModel.sliderPosition.upperBound {
                 viewModel.sliderPosition = newValue...viewModel.sliderPosition.upperBound
-                sliderPositionChanged(viewModel.sliderPosition)
+                sliderPositionChanged(viewModel.sliderPosition, true)
                 isActive = true
             }
         })
@@ -49,7 +49,7 @@ struct RangedSliderView: View {
             
             if newValue > viewModel.sliderPosition.lowerBound {
                 viewModel.sliderPosition = viewModel.sliderPosition.lowerBound...newValue
-                sliderPositionChanged(viewModel.sliderPosition)
+                sliderPositionChanged(viewModel.sliderPosition, false)
                 isActive = true
             }
         })
@@ -81,16 +81,14 @@ struct RangedSliderView: View {
 
 extension RangedSliderView {
     @MainActor class ViewModel: ObservableObject {
-        @Published var sliderPosition: ClosedRange<Float>
-        let sliderBounds: ClosedRange<Float>
+        
+        @Published var sliderPosition: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
+        let sliderBounds: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
+        let sliderBoundDifference: Float 
+        
 
-        let sliderBoundDifference: Float
-
-        init(sliderPosition: ClosedRange<Float>,
-             sliderBounds: ClosedRange<Float>) {
-            self.sliderPosition = sliderPosition
-            self.sliderBounds = sliderBounds
-            self.sliderBoundDifference = sliderBounds.upperBound - sliderBounds.lowerBound
+        init() {
+            self.sliderBoundDifference = self.sliderBounds.upperBound - self.sliderBounds.lowerBound
         }
 
         func leftThumbLocation(width: CGFloat, sliderViewYCenter: CGFloat = 0) -> CGPoint {
@@ -119,8 +117,6 @@ extension RangedSliderView {
 
 struct RangeSlider_Previews: PreviewProvider {
     static var previews: some View {
-        RangedSliderView(viewModel: .init(sliderPosition: 2...8,
-                                     sliderBounds: 1...10),
-                    sliderPositionChanged: { _ in })
+        RangedSliderView(sliderPositionChanged: { _, _ in })
     }
 }

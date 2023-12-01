@@ -9,21 +9,10 @@ import SwiftUI
 import AVKit
 
 struct CroppingView: View {
-    var url: URL?
-    let avPlayer: AVPlayer?
-    var duration: CMTime?
-    @State var value: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
-    @State var bounds: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
+    @ObservedObject private var viewModel: ViewModel = ViewModel()
     
     init(url: URL? = nil) {
-        self.url = url
-        if url != nil{
-            var asset = AVAsset(url: url!)
-            duration = asset.duration
-            avPlayer = AVPlayer(url: url!)
-        } else {
-            avPlayer = nil
-        }
+        viewModel.SetURL(url: url)
     }
     
     var body: some View {
@@ -31,24 +20,44 @@ struct CroppingView: View {
             Color.black
                 .ignoresSafeArea()
             VStack{
-                if (url != nil){
-                    VideoPlayer(player: avPlayer)
+                if (viewModel.url != nil){
+                    VideoPlayer(player: viewModel.avPlayer)
                         .frame(maxWidth: .infinity)
                 }
                 HStack{
                     Spacer(minLength: 50)
-                    RangedSliderView(viewModel: RangedSliderView.ViewModel(sliderPosition: value, sliderBounds: bounds), sliderPositionChanged: GetSliderRange)
+                    RangedSliderView(sliderPositionChanged: viewModel.GetSliderRange)
                     Spacer(minLength: 50)
                 }
                 Spacer(minLength: 50)
             }
         }
     }
-    
-    func GetSliderRange(range: ClosedRange<Float>){
-        if (duration != nil){
-            var time = CMTime(seconds: Double(range.lowerBound) * duration!.seconds, preferredTimescale: duration!.timescale)
-            avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
+}
+
+extension CroppingView {
+    @MainActor class ViewModel: ObservableObject {
+        @Published var url: URL?
+        @Published var avPlayer: AVPlayer?
+        @Published var duration: CMTime?
+        
+        func SetURL(url: URL?){
+            self.url = url
+            if url != nil{
+                let asset = AVAsset(url: url!)
+                duration = asset.duration
+                avPlayer = AVPlayer(url: url!)
+            } else {
+                avPlayer = nil
+            }
+        }
+        
+        func GetSliderRange(range: ClosedRange<Float>, isLeft: Bool){
+            if (duration != nil){
+                var value = Double(isLeft ? range.lowerBound : range.upperBound)
+                let time = CMTime(seconds: value * duration!.seconds, preferredTimescale: duration!.timescale)
+                avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
+            }
         }
     }
 }
