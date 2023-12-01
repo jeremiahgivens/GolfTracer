@@ -40,6 +40,8 @@ extension CroppingView {
         @Published var url: URL?
         @Published var avPlayer: AVPlayer?
         @Published var duration: CMTime?
+        @Published var videoRange: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
+        @Published var myObserver: MyObserver?
         
         func SetURL(url: URL?){
             self.url = url
@@ -47,16 +49,40 @@ extension CroppingView {
                 let asset = AVAsset(url: url!)
                 duration = asset.duration
                 avPlayer = AVPlayer(url: url!)
+                myObserver = MyObserver(object: avPlayer!)
             } else {
                 avPlayer = nil
             }
         }
         
         func GetSliderRange(range: ClosedRange<Float>, isLeft: Bool){
+            videoRange = range
             if (duration != nil){
                 var value = Double(isLeft ? range.lowerBound : range.upperBound)
                 let time = CMTime(seconds: value * duration!.seconds, preferredTimescale: duration!.timescale)
                 avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
+            }
+        }
+    }
+}
+
+class MyObserver: NSObject {
+    @objc var objectToObserve: AVPlayer
+    var observation: NSKeyValueObservation?
+
+
+    init(object: AVPlayer) {
+        objectToObserve = object
+        super.init()
+
+
+        observation = observe(
+            \.objectToObserve.timeControlStatus,
+            options: [.old, .new]
+        ) { object, change in
+            print("timeControlStatus updated to: \(self.objectToObserve.timeControlStatus)")
+            if (self.objectToObserve.timeControlStatus.rawValue == 1){
+                
             }
         }
     }
