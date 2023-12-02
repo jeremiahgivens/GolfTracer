@@ -14,42 +14,26 @@
             filePath = "GolfTracer/CroppingView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
             landmarkName = "init(object:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "05A174B9-A125-4845-9BF6-042998EF6DA5 - fe21cf93d0231e23"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (GolfTracer.MyObserver, Foundation.NSKeyValueObservedChange&lt;__C.AVPlayerTimeControlStatus&gt;) -&gt; () in GolfTracer.MyObserver.init(object: __C.AVPlayer) -&gt; GolfTracer.MyObserver"
-                  moduleName = "GolfTracer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/CroppingView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "83"
-                  endingLineNumber = "83"
-                  offsetFromSymbolStart = "232">
-               </Location>
-               <Location
-                  uuid = "05A174B9-A125-4845-9BF6-042998EF6DA5 - fe21cf93d0231e23"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (GolfTracer.MyObserver, Foundation.NSKeyValueObservedChange&lt;__C.AVPlayerTimeControlStatus&gt;) -&gt; () in GolfTracer.MyObserver.init(object: __C.AVPlayer) -&gt; GolfTracer.MyObserver"
-                  moduleName = "GolfTracer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeremiahgivens/git/GolfTracer/GolfTracer/CroppingView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "83"
-                  endingLineNumber = "83"
-                  offsetFromSymbolStart = "112">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B6D63909-92B0-4736-BEDC-143DF44C04C6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GolfTracer/CroppingView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
+            landmarkName = "StartVideoFromCorrectSpot()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

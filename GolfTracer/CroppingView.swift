@@ -49,7 +49,7 @@ extension CroppingView {
                 let asset = AVAsset(url: url!)
                 duration = asset.duration
                 avPlayer = AVPlayer(url: url!)
-                myObserver = MyObserver(object: avPlayer!)
+                myObserver = MyObserver(object: avPlayer!, callback: StartVideoFromCorrectSpot)
             } else {
                 avPlayer = nil
             }
@@ -63,6 +63,16 @@ extension CroppingView {
                 avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
             }
         }
+        
+        func StartVideoFromCorrectSpot(){
+            if duration != nil {
+                var startTime = duration!.seconds * Double(videoRange.lowerBound);
+                if (avPlayer?.currentTime().seconds)! < startTime{
+                    let time = CMTime(seconds: startTime, preferredTimescale: duration!.timescale)
+                    avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
+                }
+            }
+        }
     }
 }
 
@@ -71,18 +81,17 @@ class MyObserver: NSObject {
     var observation: NSKeyValueObservation?
 
 
-    init(object: AVPlayer) {
+    init(object: AVPlayer, callback: @escaping ()->()) {
         objectToObserve = object
         super.init()
 
 
         observation = observe(
-            \.objectToObserve.timeControlStatus,
-            options: [.old, .new]
+            \.objectToObserve.timeControlStatus
         ) { object, change in
             print("timeControlStatus updated to: \(self.objectToObserve.timeControlStatus)")
             if (self.objectToObserve.timeControlStatus.rawValue == 1){
-                
+                callback()
             }
         }
     }
