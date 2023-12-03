@@ -28,9 +28,20 @@ struct CroppingView: View {
                 HStack{
                     Spacer(minLength: 50)
                     Button {
-                        viewModel.StartVideoFromCorrectSpot()
+                        if viewModel.isPlaying{
+                            viewModel.PauseVideo()
+                        } else {
+                            viewModel.StartVideoFromCorrectSpot()
+                        }
                     } label: {
-                        Image(systemName: "play")
+                        if viewModel.isPlaying{
+                            Image(systemName: "pause")
+                                .frame(width: 40, height: 30)
+                        } else {
+                            Image(systemName: "play")
+                                .frame(width: 40, height: 30)
+                        }
+                        
                     }
                         .buttonStyle(.borderedProminent)
                     Spacer(minLength: 20)
@@ -49,6 +60,8 @@ extension CroppingView {
         @Published var avPlayer: AVPlayer?
         @Published var duration: CMTime?
         @Published var videoRange: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
+        @Published var isPlaying = false
+        var timeBoundaryObserver: Any?
 
         func SetURL(url: URL?){
             self.url = url
@@ -64,20 +77,40 @@ extension CroppingView {
         func GetSliderRange(range: ClosedRange<Float>, isLeft: Bool){
             videoRange = range
             if (duration != nil){
-                var value = Double(isLeft ? range.lowerBound : range.upperBound)
+                let value = Double(isLeft ? range.lowerBound : range.upperBound)
                 let time = CMTime(seconds: value * duration!.seconds, preferredTimescale: duration!.timescale)
                 avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
             }
         }
         
+        func PauseVideo(){
+            self.avPlayer?.pause()
+            self.isPlaying = false
+        }
+        
         func StartVideoFromCorrectSpot(){
             if duration != nil {
-                var startTime = duration!.seconds * Double(videoRange.lowerBound);
-                if (avPlayer?.currentTime().seconds)! < startTime{
+                let startTime = duration!.seconds * Double(videoRange.lowerBound);
+                var stopTime = duration!.seconds * Double(videoRange.upperBound)
+                
+                if timeBoundaryObserver != nil {
+                    avPlayer?.removeTimeObserver(timeBoundaryObserver!)
+                }
+                
+                self.timeBoundaryObserver = self.avPlayer!.addBoundaryTimeObserver(forTimes: [NSValue(time: CMTime(seconds: stopTime, preferredTimescale: duration!.timescale))], queue: DispatchQueue.main, using: { [unowned self] in
+                    
+                    Task{
+                        await self.PauseVideo()
+                    }
+                    
+                })
+                
+                if (avPlayer?.currentTime().seconds)! < startTime || (avPlayer?.currentTime().seconds)! >= stopTime{
                     let time = CMTime(seconds: startTime, preferredTimescale: duration!.timescale)
                     avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
                 }
                 avPlayer?.play()
+                isPlaying = true
             }
         }
     }
