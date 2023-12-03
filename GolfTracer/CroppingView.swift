@@ -23,9 +23,17 @@ struct CroppingView: View {
                 if (viewModel.url != nil){
                     VideoPlayer(player: viewModel.avPlayer)
                         .frame(maxWidth: .infinity)
+                        .disabled(true)
                 }
                 HStack{
                     Spacer(minLength: 50)
+                    Button {
+                        viewModel.StartVideoFromCorrectSpot()
+                    } label: {
+                        Image(systemName: "play")
+                    }
+                        .buttonStyle(.borderedProminent)
+                    Spacer(minLength: 20)
                     RangedSliderView(sliderPositionChanged: viewModel.GetSliderRange)
                     Spacer(minLength: 50)
                 }
@@ -41,15 +49,13 @@ extension CroppingView {
         @Published var avPlayer: AVPlayer?
         @Published var duration: CMTime?
         @Published var videoRange: ClosedRange<Float> = ClosedRange(uncheckedBounds: (0, 1))
-        @Published var myObserver: MyObserver?
-        
+
         func SetURL(url: URL?){
             self.url = url
             if url != nil{
                 let asset = AVAsset(url: url!)
                 duration = asset.duration
                 avPlayer = AVPlayer(url: url!)
-                myObserver = MyObserver(object: avPlayer!, callback: StartVideoFromCorrectSpot)
             } else {
                 avPlayer = nil
             }
@@ -71,27 +77,7 @@ extension CroppingView {
                     let time = CMTime(seconds: startTime, preferredTimescale: duration!.timescale)
                     avPlayer?.seek(to: time, toleranceBefore: CMTime(value: 0, timescale: 1), toleranceAfter: CMTime(value: 0, timescale: 1))
                 }
-            }
-        }
-    }
-}
-
-class MyObserver: NSObject {
-    @objc var objectToObserve: AVPlayer
-    var observation: NSKeyValueObservation?
-
-
-    init(object: AVPlayer, callback: @escaping ()->()) {
-        objectToObserve = object
-        super.init()
-
-
-        observation = observe(
-            \.objectToObserve.timeControlStatus
-        ) { object, change in
-            print("timeControlStatus updated to: \(self.objectToObserve.timeControlStatus)")
-            if (self.objectToObserve.timeControlStatus.rawValue == 1){
-                callback()
+                avPlayer?.play()
             }
         }
     }

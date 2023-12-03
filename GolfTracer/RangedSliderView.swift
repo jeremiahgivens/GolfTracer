@@ -71,11 +71,12 @@ struct RangedSliderView: View {
     }
 
     @ViewBuilder func thumbView(position: CGPoint, value: Float) -> some View {
-     Circle()
+        Capsule()
             .foregroundColor(.red)
-        .contentShape(Rectangle())
-        .position(x: position.x, y: position.y)
-        .animation(.spring(), value: isActive)
+            .contentShape(Rectangle())
+            .position(x: position.x, y: position.y)
+            .animation(.spring(), value: isActive)
+            .frame(width: 8)
     }
 }
 
